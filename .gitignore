@@ -51,5 +51,3 @@ hs_err_pid*
 # Docker local overrides
 docker-compose.override.yml
 compose.override.yml
-
-docker-compose.yml
