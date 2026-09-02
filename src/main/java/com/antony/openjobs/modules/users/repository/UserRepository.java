@@ -1,4 +1,4 @@
 package com.antony.openjobs.modules.users.repository;
 
-public class UseRepository {
+public class UserRepository {
 }

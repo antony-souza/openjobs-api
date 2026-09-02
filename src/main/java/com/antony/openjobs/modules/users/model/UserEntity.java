@@ -1,5 +1,6 @@
 package com.antony.openjobs.modules.users.model;
 
+import com.antony.openjobs.common.entities.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -15,12 +16,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UserEntity {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
-
+public class UserEntity extends BaseEntity {
     @Column(nullable = false)
     private String name;
 
@@ -32,15 +28,4 @@ public class UserEntity {
 
     @Column(nullable = false)
     private String password;
-
-    @CreationTimestamp
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
-
-    @UpdateTimestamp
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
-
-    @Column(name = "deleted_at")
-    private LocalDateTime deletedAt;
 }
