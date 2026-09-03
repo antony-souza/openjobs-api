@@ -1,6 +1,6 @@
 # OpenJobs
+
 > O projeto está em desenvolvimento e novas funcionalidades serão adicionadas gradualmente.
-OpenJobs é uma API REST para publicação de vagas e gerenciamento de candidaturas, desenvolvida com Java e Spring Boot.
 
 O projeto tem como objetivo explorar o desenvolvimento de aplicações backend utilizando o ecossistema Spring, organização modular e separação das regras de negócio através de casos de uso.
 
