@@ -1,4 +1,8 @@
 package com.antony.openjobs.modules.applications.enums;
 
-public record ApplicationStatus() {
+public enum ApplicationStatus {
+    PENDING,
+    REVIEWING,
+    APPROVED,
+    REJECTED
 }

@@ -13,7 +13,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class JobsEntity extends BaseEntity {
+public class JobEntity extends BaseEntity {
     @Column(nullable = false)
     private String title;
 
