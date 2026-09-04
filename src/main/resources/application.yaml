@@ -20,6 +20,7 @@ spring:
     enabled: true
     locations: classpath:db/migration
 
-  jwt:
-    expiration: ${JWT_EXPIRATION:9000000}
-    key: ${JWT_KEY:dr+C8Nu229pp7XKksvY1mpGU7Ysk1/9h/nv3Ul7+iCvbv9Jw77oQwcQ56ItUsyz2NHwmcmDZq1UVMUXE65VAhm7OIaJv/xNQ37gKM+QlSEmkGlC4ohFD+/niVvFpy1rrjO7tkSzGIRL+lQM2UZUV4MFU+s0CHwRRkfGwR2Na8Oxc9X9olcw2Fh/4Pvgvea3CAvsZnTSVbpLwNDvDucwAPBRi2nGOa0RvLXAQM5xMFopcGVU4HJQyQXidxMZLsrSrdZPs6JazdhUC0y++5byZAeZbEK+TKpdbthIx0U9VNDq/}
+jwt:
+  expiration: ${JWT_EXPIRATION:9000000}
+  # fallback for dev
+  key: ${JWT_KEY:MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY=}
