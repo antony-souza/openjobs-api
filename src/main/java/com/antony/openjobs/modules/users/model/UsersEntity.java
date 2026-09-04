@@ -1,6 +1,7 @@
 package com.antony.openjobs.modules.users.model;
 
 import com.antony.openjobs.common.entities.BaseEntity;
+import com.antony.openjobs.modules.roles.model.RoleEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -28,4 +29,8 @@ public class UserEntity extends BaseEntity {
 
     @Column(nullable = false)
     private String password;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "role_id")
+    private RoleEntity role;
 }
