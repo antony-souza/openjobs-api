@@ -1,4 +1,4 @@
-package com.antony.openjobs.modules.auth.usecases.signin;
+package com.antony.openjobs.modules.auth.signin;
 
 public record SignInResponse(
         String token

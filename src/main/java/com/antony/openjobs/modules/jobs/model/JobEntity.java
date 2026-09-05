@@ -1,7 +1,7 @@
 package com.antony.openjobs.modules.jobs.model;
 
 import com.antony.openjobs.common.entities.BaseEntity;
-import com.antony.openjobs.modules.users.model.UsersEntity;
+import com.antony.openjobs.modules.users.model.UserEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -13,7 +13,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class JobsEntity extends BaseEntity {
+public class JobEntity extends BaseEntity {
     @Column(nullable = false)
     private String title;
 
@@ -23,5 +23,5 @@ public class JobsEntity extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "published_by", nullable = false)
-    private UsersEntity publishedBy;
+    private UserEntity publishedBy;
 }

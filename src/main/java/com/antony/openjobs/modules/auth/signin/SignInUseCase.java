@@ -1,4 +1,4 @@
-package com.antony.openjobs.modules.auth.usecases.signin;
+package com.antony.openjobs.modules.auth.signin;
 
 import com.antony.openjobs.config.security.TokenProvider;
 import com.antony.openjobs.modules.users.model.UserEntity;
@@ -15,17 +15,17 @@ public class SignInUseCase {
     private final TokenProvider tokenProvider;
 
     public SignInResponse execute(SignInRequest request) {
-//        UserEntity user = userRepository
-//                .findByEmail(request.email())
-//                .orElseThrow(() -> new RuntimeException("Email ou senha inválidos"));
-//
-//        boolean passwordMatch = passwordEncoder.matches(request.password(), user.getPassword());
-//
-//        if (!passwordMatch) {
-//            throw new RuntimeException("Email ou senha inválidos");
-//        }
+        UserEntity user = userRepository
+                .findByEmail(request.email())
+                .orElseThrow(() -> new RuntimeException("Email ou senha inválidos"));
 
-        String token = tokenProvider.generateToken("antony");
+        boolean passwordMatch = passwordEncoder.matches(request.password(), user.getPassword());
+
+        if (!passwordMatch) {
+            throw new RuntimeException("Email ou senha inválidos");
+        }
+
+        String token = tokenProvider.generateToken(user.getId().toString());
 
         return new SignInResponse(token);
     }

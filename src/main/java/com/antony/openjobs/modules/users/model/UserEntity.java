@@ -1,8 +1,9 @@
 package com.antony.openjobs.modules.users.model;
 
 import com.antony.openjobs.common.entities.BaseEntity;
-import com.antony.openjobs.modules.roles.model.RolesEntity;
+import com.antony.openjobs.modules.roles.model.RoleEntity;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 
 @Entity
@@ -12,7 +13,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UsersEntity extends BaseEntity {
+public class UserEntity extends BaseEntity {
     @Column(nullable = false)
     private String name;
 
@@ -23,9 +24,10 @@ public class UsersEntity extends BaseEntity {
     private String code;
 
     @Column(nullable = false)
+    @Size(min = 6, max = 100)
     private String password;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "role_id")
-    private RolesEntity role;
+    private RoleEntity role;
 }
