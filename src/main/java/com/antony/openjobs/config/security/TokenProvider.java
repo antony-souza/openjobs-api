@@ -32,7 +32,7 @@ public class TokenProvider {
         );
 
         return Jwts.builder()
-                .claim("userId", userId)
+                .subject(userId)
                 .issuedAt(now)
                 .expiration(expiration)
                 .signWith(getSigningKey())
