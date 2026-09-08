@@ -13,7 +13,6 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class ApplicationEntity extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)

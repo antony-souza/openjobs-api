@@ -12,7 +12,6 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class RoleEntity extends BaseEntity {
     @Column(nullable = false)
     private String name;

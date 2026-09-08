@@ -12,7 +12,6 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class UserEntity extends BaseEntity {
     @Column(nullable = false)
     private String name;

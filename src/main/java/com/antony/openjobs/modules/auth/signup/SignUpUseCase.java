@@ -23,11 +23,10 @@ public class SignUpUseCase {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Este email já está cadastrado");
         }
 
-        UserEntity user = UserEntity.builder()
-                .name(request.name().trim())
-                .email(email)
-                .password(passwordEncoder.encode(request.password()))
-                .build();
+        UserEntity user = new UserEntity();
+        user.setName(request.name().trim());
+        user.setEmail(email);
+        user.setPassword(passwordEncoder.encode(request.password()));
 
         UserEntity createdUser = userRepository.save(user);
         String token = tokenProvider.generateToken(createdUser.getId().toString());

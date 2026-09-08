@@ -12,7 +12,6 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class JobEntity extends BaseEntity {
     @Column(nullable = false)
     private String title;
