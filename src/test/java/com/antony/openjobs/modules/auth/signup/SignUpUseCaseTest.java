@@ -1,8 +1,11 @@
 package com.antony.openjobs.modules.auth.signup;
 
 import com.antony.openjobs.config.security.TokenProvider;
+import com.antony.openjobs.services.queue.QueueService;
 import com.antony.openjobs.modules.users.model.UserEntity;
 import com.antony.openjobs.modules.users.repository.UserRepository;
+import com.antony.openjobs.services.email.EmailMessage;
+import com.antony.openjobs.utils.QueueNameUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -36,6 +39,9 @@ class SignUpUseCaseTest {
     @Mock
     private TokenProvider tokenProvider;
 
+    @Mock
+    private QueueService queueService;
+
     @InjectMocks
     private SignUpUseCase signUpUseCase;
 
@@ -64,6 +70,14 @@ class SignUpUseCaseTest {
         assertThat(userToSave.getName()).isEqualTo("Antony Souza");
         assertThat(userToSave.getEmail()).isEqualTo("antony@example.com");
         assertThat(userToSave.getPassword()).isEqualTo("encoded-password");
+        verify(queueService).addInQueue(
+                QueueNameUtils.GENERIC_EMAILS,
+                new EmailMessage(
+                        "antony@example.com",
+                        "Bem-vindo à OpenJobs!",
+                        "Sua conta foi criada com sucesso."
+                )
+        );
         verify(tokenProvider).generateToken(userId.toString());
     }
 
@@ -81,6 +95,6 @@ class SignUpUseCaseTest {
                 });
 
         verify(userRepository, never()).save(any());
-        verifyNoInteractions(passwordEncoder, tokenProvider);
+        verifyNoInteractions(passwordEncoder, tokenProvider, queueService);
     }
 }

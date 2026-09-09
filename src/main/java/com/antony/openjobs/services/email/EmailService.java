@@ -1,4 +1,4 @@
-package com.antony.openjobs.services;
+package com.antony.openjobs.services.email;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
@@ -10,12 +10,12 @@ import org.springframework.stereotype.Service;
 public class EmailService {
     private final JavaMailSender mailSender;
 
-    public void sendEmail(String to, String subject, String body) {
+    public void sendEmail(EmailMessage emailMessage) {
         SimpleMailMessage message = new SimpleMailMessage();
 
-        message.setTo(to);
-        message.setSubject(subject);
-        message.setText(body);
+        message.setTo(emailMessage.to());
+        message.setSubject(emailMessage.subject());
+        message.setText(emailMessage.body());
 
         mailSender.send(message);
     }

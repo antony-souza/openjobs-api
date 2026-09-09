@@ -1,8 +1,8 @@
 package com.antony.openjobs.utils;
 
-public final class RabbitQueues {
+public final class QueueNameUtils {
 
-    private RabbitQueues() {
+    private QueueNameUtils() {
     }
 
     public static final String GENERIC_EMAILS = "generic-emails";
