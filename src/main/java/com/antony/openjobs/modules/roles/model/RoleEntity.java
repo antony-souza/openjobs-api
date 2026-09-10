@@ -20,5 +20,5 @@ public class RoleEntity extends BaseEntity {
     private String code;
 
     @Column()
-    private Integer level;
+    private Integer level = 0;
 }

@@ -1,5 +1,6 @@
 package com.antony.openjobs.modules.auth.controller;
 
+import com.antony.openjobs.common.api.ApiResponse;
 import com.antony.openjobs.modules.auth.signin.SignInRequest;
 import com.antony.openjobs.modules.auth.signin.SignInResponse;
 import com.antony.openjobs.modules.auth.signin.SignInUseCase;
@@ -21,13 +22,14 @@ public class AuthController {
     private final SignUpUseCase signUpUseCase;
 
     @PostMapping("/sign-in")
-    public SignInResponse signIn(@Valid @RequestBody SignInRequest request) {
-        return signInUseCase.execute(request);
+    public ResponseEntity<ApiResponse<SignInResponse>> signIn(@Valid @RequestBody SignInRequest request) {
+        return ResponseEntity.ok(ApiResponse.success(signInUseCase.execute(request)));
     }
 
     @PostMapping("/sign-up")
-    @ResponseStatus(HttpStatus.CREATED)
-    public SignUpResponse signUp(@Valid @RequestBody SignUpRequest request) {
-        return signUpUseCase.execute(request);
+    public ResponseEntity<ApiResponse<SignUpResponse>> signUp(@Valid @RequestBody SignUpRequest request) {
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(ApiResponse.success(signUpUseCase.execute(request)));
     }
 }
