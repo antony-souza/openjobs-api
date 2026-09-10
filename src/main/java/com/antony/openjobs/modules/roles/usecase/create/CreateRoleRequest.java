@@ -1,4 +1,8 @@
 package com.antony.openjobs.modules.roles.usecase.create;
 
-public class CreateRoleRequest {
+public record CreateRoleRequest(
+        String name,
+        String code,
+        Integer level
+) {
 }

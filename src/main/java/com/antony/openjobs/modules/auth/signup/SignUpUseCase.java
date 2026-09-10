@@ -33,6 +33,7 @@ public class SignUpUseCase {
         user.setPassword(passwordEncoder.encode(request.password()));
 
         UserEntity createdUser = userRepository.save(user);
+
         queueService.addInQueue(
                 QueueNameUtils.GENERIC_EMAILS,
                 new EmailMessage(
