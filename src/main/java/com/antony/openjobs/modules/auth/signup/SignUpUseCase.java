@@ -21,21 +21,27 @@ public class SignUpUseCase {
     private final QueueService queueService;
 
     public SignUpResponse execute(SignUpRequest request) {
+        String email = request.email().trim().toLowerCase();
+        String username = request.username().trim();
 
-        if (userRepository.existsByEmailAndUsernameAndDeletedAtIsNull(
-                request.email().trim(),
-                request.username().trim())
-        ) {
+        if (userRepository.existsByEmailAndDeletedAtIsNull(email)) {
             throw new ResponseStatusException(
                     HttpStatus.CONFLICT,
                     "Este email já está cadastrado"
             );
         }
 
+        if (userRepository.existsByUsernameAndDeletedAtIsNull(username)) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "Este username já está cadastrado"
+            );
+        }
+
         UserEntity user = new UserEntity();
         user.setName(request.name().trim());
-        user.setEmail(request.email().trim());
-        user.setUsername(request.username().trim());
+        user.setEmail(email);
+        user.setUsername(username);
         user.setPassword(passwordEncoder.encode(request.password()));
 
         UserEntity createdUser = userRepository.save(user);

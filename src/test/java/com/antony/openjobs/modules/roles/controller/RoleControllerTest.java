@@ -3,6 +3,7 @@ package com.antony.openjobs.modules.roles.controller;
 import com.antony.openjobs.modules.roles.usecase.create.CreateRoleRequest;
 import com.antony.openjobs.modules.roles.usecase.create.CreateRoleResponse;
 import com.antony.openjobs.modules.roles.usecase.create.CreateRoleUseCase;
+import com.antony.openjobs.modules.roles.usecase.update.UpdateRoleUseCase;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
@@ -16,7 +17,8 @@ class RoleControllerTest {
     @Test
     void shouldReturnCreatedApiResponse() {
         CreateRoleUseCase useCase = mock(CreateRoleUseCase.class);
-        RoleController controller = new RoleController(useCase);
+        UpdateRoleUseCase updateRoleUseCase = mock(UpdateRoleUseCase.class);
+        RoleController controller = new RoleController(useCase, updateRoleUseCase);
         CreateRoleRequest request = new CreateRoleRequest("Fundador", "founder", 100);
         CreateRoleResponse useCaseResponse = new CreateRoleResponse("Role cadastrada com sucesso!");
         when(useCase.execute(request)).thenReturn(useCaseResponse);

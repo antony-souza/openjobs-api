@@ -16,7 +16,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -50,12 +49,13 @@ class SignUpUseCaseTest {
 
     @Test
     void shouldCreateAccountWithNormalizedEmailAndEncodedPassword() {
-        var request = new SignUpRequest("  Antony Souza  ", "  ANTONY@EXAMPLE.COM  ", "password123");
+        var request = new SignUpRequest("  Antony Souza  ", "  ANTONY@EXAMPLE.COM  ", "antony", "password123");
         var userId = UUID.randomUUID();
         var savedUser = new UserEntity();
         savedUser.setId(userId);
 
-        when(userRepository.findByEmail("antony@example.com")).thenReturn(Optional.empty());
+        when(userRepository.existsByEmailAndDeletedAtIsNull("antony@example.com")).thenReturn(false);
+        when(userRepository.existsByUsernameAndDeletedAtIsNull("antony")).thenReturn(false);
         when(passwordEncoder.encode("password123")).thenReturn("encoded-password");
         when(userRepository.save(any(UserEntity.class))).thenReturn(savedUser);
         when(tokenProvider.generateToken(userId.toString())).thenReturn("jwt-token");
@@ -69,6 +69,7 @@ class SignUpUseCaseTest {
         var userToSave = userCaptor.getValue();
         assertThat(userToSave.getName()).isEqualTo("Antony Souza");
         assertThat(userToSave.getEmail()).isEqualTo("antony@example.com");
+        assertThat(userToSave.getUsername()).isEqualTo("antony");
         assertThat(userToSave.getPassword()).isEqualTo("encoded-password");
         verify(queueService).addInQueue(
                 QueueNameUtils.GENERIC_EMAILS,
@@ -83,8 +84,8 @@ class SignUpUseCaseTest {
 
     @Test
     void shouldRejectRegistrationWhenEmailAlreadyExists() {
-        var request = new SignUpRequest("Antony Souza", "ANTONY@example.com", "password123");
-        when(userRepository.findByEmail("antony@example.com")).thenReturn(Optional.of(new UserEntity()));
+        var request = new SignUpRequest("Antony Souza", "ANTONY@example.com", "antony", "password123");
+        when(userRepository.existsByEmailAndDeletedAtIsNull("antony@example.com")).thenReturn(true);
 
         assertThatThrownBy(() -> signUpUseCase.execute(request))
                 .isInstanceOf(ResponseStatusException.class)
@@ -92,6 +93,24 @@ class SignUpUseCaseTest {
                     var responseException = (ResponseStatusException) exception;
                     assertThat(responseException.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
                     assertThat(responseException.getReason()).isEqualTo("Este email já está cadastrado");
+                });
+
+        verify(userRepository, never()).save(any());
+        verifyNoInteractions(passwordEncoder, tokenProvider, queueService);
+    }
+
+    @Test
+    void shouldRejectRegistrationWhenUsernameAlreadyExists() {
+        var request = new SignUpRequest("Antony Souza", "antony@example.com", "antony", "password123");
+        when(userRepository.existsByEmailAndDeletedAtIsNull("antony@example.com")).thenReturn(false);
+        when(userRepository.existsByUsernameAndDeletedAtIsNull("antony")).thenReturn(true);
+
+        assertThatThrownBy(() -> signUpUseCase.execute(request))
+                .isInstanceOf(ResponseStatusException.class)
+                .satisfies(exception -> {
+                    var responseException = (ResponseStatusException) exception;
+                    assertThat(responseException.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
+                    assertThat(responseException.getReason()).isEqualTo("Este username já está cadastrado");
                 });
 
         verify(userRepository, never()).save(any());

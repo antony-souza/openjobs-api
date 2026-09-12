@@ -14,7 +14,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -49,8 +48,9 @@ class CreateJobUseCaseTest {
                 "Crie e mantenha serviços Spring Boot."
         );
 
-        when(jobRepository.findByTitle(request.title())).thenReturn(Optional.empty());
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(jobRepository.existsByTitleAndPublishedBy_IdAndDeletedAtIsNull(request.title(), userId))
+                .thenReturn(false);
+        when(userRepository.getReferenceById(userId)).thenReturn(user);
 
         CreateJobResponse response = createJobUseCase.execute(request, userId);
 
@@ -71,7 +71,8 @@ class CreateJobUseCaseTest {
                 "Crie e mantenha serviços Spring Boot."
         );
 
-        when(jobRepository.findByTitle(request.title())).thenReturn(Optional.of(new JobEntity()));
+        when(jobRepository.existsByTitleAndPublishedBy_IdAndDeletedAtIsNull(request.title(), userId))
+                .thenReturn(true);
 
         assertThatThrownBy(() -> createJobUseCase.execute(request, userId))
                 .isInstanceOf(ResponseStatusException.class)
@@ -85,25 +86,4 @@ class CreateJobUseCaseTest {
         verify(jobRepository, never()).save(org.mockito.ArgumentMatchers.any());
     }
 
-    @Test
-    void shouldRejectJobWhenAuthenticatedUserDoesNotExist() {
-        UUID userId = UUID.randomUUID();
-        CreateJobRequest request = new CreateJobRequest(
-                "Desenvolvedor Java",
-                "Crie e mantenha serviços Spring Boot."
-        );
-
-        when(jobRepository.findByTitle(request.title())).thenReturn(Optional.empty());
-        when(userRepository.findById(userId)).thenReturn(Optional.empty());
-
-        assertThatThrownBy(() -> createJobUseCase.execute(request, userId))
-                .isInstanceOf(ResponseStatusException.class)
-                .satisfies(exception -> {
-                    ResponseStatusException responseException = (ResponseStatusException) exception;
-                    assertThat(responseException.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-                    assertThat(responseException.getReason()).isEqualTo("Usuário não encontrado");
-                });
-
-        verify(jobRepository, never()).save(org.mockito.ArgumentMatchers.any());
-    }
 }
