@@ -1,4 +1,9 @@
 package com.antony.openjobs.modules.jobs.usecase.create;
 
-public record CreateJobResponse() {
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+
+public record CreateJobResponse(
+        String message
+) {
 }

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
+import java.util.UUID;
 
 @Component
 public class TokenProvider {
@@ -41,6 +42,11 @@ public class TokenProvider {
 
     public String getSubject(String token) {
         return getClaims(token).getSubject();
+    }
+
+    public AuthenticatedUser getAuthenticatedUser(String token) {
+        Claims claims = getClaims(token);
+        return new AuthenticatedUser(UUID.fromString(claims.getSubject()));
     }
 
     public boolean isTokenValid(String token) {

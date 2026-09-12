@@ -35,11 +35,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             if (tokenProvider.isTokenValid(token)) {
 
-                String userId = tokenProvider.getSubject(token);
+                AuthenticatedUser authenticatedUser = tokenProvider.getAuthenticatedUser(token);
 
                 var authentication =
                         new UsernamePasswordAuthenticationToken(
-                                userId,
+                                authenticatedUser,
                                 null,
                                 Collections.emptyList()
                         );

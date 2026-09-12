@@ -1,4 +1,8 @@
 package com.antony.openjobs.config.security;
 
-public record AuthenticatedUser() {
+import java.util.UUID;
+
+public record AuthenticatedUser(
+        UUID userId
+) {
 }

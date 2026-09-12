@@ -4,6 +4,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.util.UUID;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 class TokenProviderTest {
@@ -32,5 +34,15 @@ class TokenProviderTest {
         var token = tokenProvider.generateToken("user-id");
 
         assertThat(tokenProvider.isTokenValid(token + "invalid")).isFalse();
+    }
+
+    @Test
+    void shouldReadUserIdFromToken() {
+        UUID userId = UUID.randomUUID();
+
+        var token = tokenProvider.generateToken(userId.toString());
+
+        assertThat(tokenProvider.getAuthenticatedUser(token))
+                .isEqualTo(new AuthenticatedUser(userId));
     }
 }
