@@ -17,13 +17,13 @@ public class CreateRoleUseCase {
 
     public CreateRoleResponse execute(CreateRoleRequest request) {
 
-        if (roleRepository.findByCode(request.code()).isPresent()) {
+        if (roleRepository.existsByNameAndCode(request.name().trim(), request.code().trim())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Role já cadastrada");
         }
 
         RoleEntity role = new RoleEntity();
-        role.setName(request.name());
-        role.setCode(request.code());
+        role.setName(request.name().trim());
+        role.setCode(request.code().trim());
         role.setLevel(request.level());
 
         roleRepository.save(role);

@@ -19,14 +19,14 @@ public class UserEntity extends BaseEntity {
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Column()
-    private String code;
+    @Column(nullable = false, unique = true)
+    private String username;
 
     @Column(nullable = false)
     @Size(min = 6, max = 100)
     private String password;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "role_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(nullable = false, name = "role_id")
     private RoleEntity role;
 }

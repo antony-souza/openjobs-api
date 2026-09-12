@@ -12,6 +12,9 @@ public record SignUpRequest(
         @Email(message = "O email deve ser válido")
         String email,
 
+        @NotBlank(message = "O username é obrigatório")
+        String username,
+
         @NotBlank(message = "A senha é obrigatória")
         @Size(min = 6, max = 100, message = "A senha deve ter entre 6 e 100 caracteres")
         String password
