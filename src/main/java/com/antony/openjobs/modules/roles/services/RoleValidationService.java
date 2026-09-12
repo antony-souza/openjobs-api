@@ -13,17 +13,15 @@ import java.util.UUID;
 public class RoleValidationService {
     private final RoleRepository roleRepository;
 
-    public void validateDuplicateRole(String name, String code, UUID roleId) {
+    public void validateDuplicateRole(String code, UUID roleId) {
         boolean roleExists = roleId == null
-                ? roleRepository.existsByNameAndCodeAndDeletedAtIsNull(name, code)
-                : roleRepository.existsByIdAndCodeAndNameAndDeletedAtIsNull(
-                roleId, code, name
-        );
+                ? roleRepository.existsByCodeAndDeletedAtIsNull(code)
+                : roleRepository.existsByCodeAndIdNotAndDeletedAtIsNull(code, roleId);
 
         if (roleExists) {
             throw new ResponseStatusException(
                     HttpStatus.CONFLICT,
-                    "Role já cadastrada"
+                    "Já existe uma role com este código"
             );
         }
     }
