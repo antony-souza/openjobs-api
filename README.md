@@ -159,7 +159,3 @@ Para compilar, testar e verificar o projeto como no pipeline de CI:
 ```
 
 O GitHub Actions executa `verify` em pushes e pull requests direcionados à branch `main`.
-
-## Status
-
-Em desenvolvimento, com foco em aprendizado e portfólio de backend Java/Spring.
