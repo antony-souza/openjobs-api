@@ -10,6 +10,10 @@ import java.util.UUID;
 @Repository
 public interface RoleRepository extends JpaRepository<RoleEntity, UUID> {
     Optional<RoleEntity> findByCode(String code);
+
+    Optional<RoleEntity> findByIdAndDeletedAtIsNull(UUID id);
+
     boolean existsByCodeAndDeletedAtIsNull(String code);
+
     boolean existsByCodeAndIdNotAndDeletedAtIsNull(String code, UUID id);
 }

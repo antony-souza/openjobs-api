@@ -1,4 +1,6 @@
 package com.antony.openjobs.modules.users.usecase.update;
 
-public record UpdateUserResponse() {
+public record UpdateUserResponse(
+        String message
+) {
 }
