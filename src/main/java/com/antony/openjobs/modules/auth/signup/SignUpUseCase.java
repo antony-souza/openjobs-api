@@ -2,6 +2,8 @@ package com.antony.openjobs.modules.auth.signup;
 
 import lombok.RequiredArgsConstructor;
 import com.antony.openjobs.config.security.TokenProvider;
+import com.antony.openjobs.modules.roles.model.RoleEntity;
+import com.antony.openjobs.modules.roles.repository.RoleRepository;
 import com.antony.openjobs.services.queue.QueueService;
 import com.antony.openjobs.modules.users.model.UserEntity;
 import com.antony.openjobs.modules.users.repository.UserRepository;
@@ -16,6 +18,7 @@ import org.springframework.web.server.ResponseStatusException;
 @RequiredArgsConstructor
 public class SignUpUseCase {
     private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
     private final QueueService queueService;
@@ -38,10 +41,17 @@ public class SignUpUseCase {
             );
         }
 
+        RoleEntity role = roleRepository.findByIdAndDeletedAtIsNull(request.roleId())
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Role não encontrada"
+                ));
+
         UserEntity user = new UserEntity();
         user.setName(request.name().trim());
         user.setEmail(email);
         user.setUsername(username);
+        user.setRole(role);
         user.setPassword(passwordEncoder.encode(request.password()));
 
         UserEntity createdUser = userRepository.save(user);

@@ -136,22 +136,6 @@ No Linux ou macOS:
 
 As migrations são executadas automaticamente na inicialização.
 
-## Endpoints disponíveis
-
-| Método | Endpoint | Descrição |
-| --- | --- | --- |
-| `POST` | `/v1/auth/sign-up` | Cria uma conta. |
-| `POST` | `/v1/auth/sign-in` | Autentica o usuário e retorna um JWT. |
-| `POST` | `/v1/roles` | Cria uma role. |
-| `PUT` | `/v1/roles/{id}` | Atualiza uma role. |
-| `POST` | `/v1/jobs` | Cria uma vaga para o usuário autenticado. |
-
-Para endpoints protegidos, envie o token obtido no login:
-
-```http
-Authorization: Bearer <seu-token-jwt>
-```
-
 ## Documentação da API
 
 Com a aplicação em execução, abra o Swagger UI:
@@ -175,13 +159,6 @@ Para compilar, testar e verificar o projeto como no pipeline de CI:
 ```
 
 O GitHub Actions executa `verify` em pushes e pull requests direcionados à branch `main`.
-
-## Próximos passos
-
-- Completar os fluxos de usuários, vagas e candidaturas.
-- Evoluir as regras de autorização por role.
-- Ampliar a cobertura de testes de integração e de controllers.
-- Adicionar paginação, filtros e documentação detalhada de cada recurso.
 
 ## Status
 
