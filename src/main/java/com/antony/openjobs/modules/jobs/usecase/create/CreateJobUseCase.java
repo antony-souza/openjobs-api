@@ -18,7 +18,7 @@ public class CreateJobUseCase {
     private final UserRepository userRepository;
 
     public CreateJobResponse execute(CreateJobRequest request, UUID publishedById) {
-        if (jobRepository.existsByTitleAndDeletedAtIsNull(request.title())) {
+        if (jobRepository.existsByTitleAndPublishedBy_IdAndDeletedAtIsNull(request.title(), publishedById)) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Vaga já cadastrada");
         }
 

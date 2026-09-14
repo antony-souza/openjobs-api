@@ -9,7 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -19,7 +18,7 @@ public class UpdateJobUseCase {
     private final UserRepository userRepository;
 
     public UpdateJobResponse execute(UUID jobId, UpdateJobRequest request, UUID publishedById) {
-        JobEntity jobEntity = jobRepository.findByIdAndDeletedAtIsNull(jobId)
+        JobEntity jobEntity = jobRepository.findByIdAndPublishedBy_IdAndDeletedAtIsNull(jobId, publishedById)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
                         "Job not found"

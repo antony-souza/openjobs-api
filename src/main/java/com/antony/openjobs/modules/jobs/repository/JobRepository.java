@@ -9,7 +9,7 @@ import java.util.UUID;
 
 @Repository
 public interface JobRepository extends JpaRepository<JobEntity, UUID> {
-    Optional<JobEntity> findByIdAndDeletedAtIsNull(UUID id);
+    Optional<JobEntity> findByIdAndPublishedBy_IdAndDeletedAtIsNull(UUID id, UUID publishedById);
 
-    boolean existsByTitleAndDeletedAtIsNull(String title);
+    boolean existsByTitleAndPublishedBy_IdAndDeletedAtIsNull(String title, UUID publishedById);
 }
