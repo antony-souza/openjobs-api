@@ -69,6 +69,8 @@ class CreateJobUseCaseTest {
                 "Crie e mantenha serviços Spring Boot."
         );
 
+        when(jobRepository.existsByTitleAndDeletedAtIsNull(request.title())).thenReturn(true);
+
         assertThatThrownBy(() -> createJobUseCase.execute(request, userId))
                 .isInstanceOf(ResponseStatusException.class)
                 .satisfies(exception -> {
@@ -78,6 +80,7 @@ class CreateJobUseCaseTest {
                 });
 
         verifyNoInteractions(userRepository);
+        verify(jobRepository).existsByTitleAndDeletedAtIsNull(request.title());
         verify(jobRepository, never()).save(org.mockito.ArgumentMatchers.any());
     }
 

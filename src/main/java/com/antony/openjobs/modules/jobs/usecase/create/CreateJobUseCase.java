@@ -18,6 +18,10 @@ public class CreateJobUseCase {
     private final UserRepository userRepository;
 
     public CreateJobResponse execute(CreateJobRequest request, UUID publishedById) {
+        if (jobRepository.existsByTitleAndDeletedAtIsNull(request.title())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Vaga já cadastrada");
+        }
+
         UserEntity publishedBy = userRepository.getReferenceById(publishedById);
 
         JobEntity jobEntity = new JobEntity();
