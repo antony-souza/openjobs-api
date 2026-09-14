@@ -8,7 +8,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -61,8 +63,10 @@ class SignInUseCaseTest {
         when(userRepository.findByEmail("missing@example.com")).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> signInUseCase.execute(request))
-                .isInstanceOf(RuntimeException.class)
-                .hasMessage("Email ou senha inválidos");
+                .isInstanceOfSatisfying(ResponseStatusException.class, exception -> {
+                    assertThat(exception.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+                    assertThat(exception.getReason()).isEqualTo("Email ou senha inválidos");
+                });
 
         verifyNoInteractions(passwordEncoder, tokenProvider);
     }
@@ -77,8 +81,10 @@ class SignInUseCaseTest {
         when(passwordEncoder.matches("wrong-password", "encoded-password")).thenReturn(false);
 
         assertThatThrownBy(() -> signInUseCase.execute(request))
-                .isInstanceOf(RuntimeException.class)
-                .hasMessage("Email ou senha inválidos");
+                .isInstanceOfSatisfying(ResponseStatusException.class, exception -> {
+                    assertThat(exception.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+                    assertThat(exception.getReason()).isEqualTo("Email ou senha inválidos");
+                });
 
         verify(tokenProvider, never()).generateToken(org.mockito.ArgumentMatchers.anyString());
     }

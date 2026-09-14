@@ -1,4 +1,4 @@
-package com.antony.openjobs.modules.jobs.usecase.create;
+package com.antony.openjobs.modules.jobs.usecase.update;
 
 import com.antony.openjobs.modules.jobs.model.JobEntity;
 import com.antony.openjobs.modules.jobs.repository.JobRepository;
@@ -9,22 +9,23 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class CreateJobUseCase {
+public class UpdateJobUseCase {
     private final JobRepository jobRepository;
     private final UserRepository userRepository;
 
-    public CreateJobResponse execute(CreateJobRequest request, UUID publishedById) {
-        if (jobRepository.existsByTitleAndPublishedBy_IdAndDeletedAtIsNull(request.title(), publishedById)) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Vaga já cadastrada");
-        }
+    public UpdateJobResponse execute(UUID jobId, UpdateJobRequest request, UUID publishedById) {
+        JobEntity jobEntity = jobRepository.findByIdAndDeletedAtIsNull(jobId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Job not found"
+                ));
 
         UserEntity publishedBy = userRepository.getReferenceById(publishedById);
-
-        JobEntity jobEntity = new JobEntity();
 
         jobEntity.setTitle(request.title());
         jobEntity.setDescription(request.description());
@@ -32,6 +33,6 @@ public class CreateJobUseCase {
 
         jobRepository.save(jobEntity);
 
-        return new CreateJobResponse("Vaga criada com sucesso!");
+        return new UpdateJobResponse("Vaga criada com sucesso!");
     }
 }

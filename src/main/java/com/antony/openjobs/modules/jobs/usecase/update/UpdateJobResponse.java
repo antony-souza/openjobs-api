@@ -1,9 +1,6 @@
-package com.antony.openjobs.modules.jobs.usecase.create;
+package com.antony.openjobs.modules.jobs.usecase.update;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
-
-public record CreateJobResponse(
+public record UpdateJobResponse(
         String message
 ) {
 }

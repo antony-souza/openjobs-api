@@ -1,4 +1,6 @@
 package com.antony.openjobs.modules.jobs.usecase.delete;
 
-public record DeleteJobResponse() {
+public record DeleteJobResponse(
+        String message
+) {
 }

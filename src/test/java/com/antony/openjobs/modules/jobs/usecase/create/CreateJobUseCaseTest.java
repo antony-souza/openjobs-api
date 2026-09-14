@@ -48,8 +48,6 @@ class CreateJobUseCaseTest {
                 "Crie e mantenha serviços Spring Boot."
         );
 
-        when(jobRepository.existsByTitleAndPublishedBy_IdAndDeletedAtIsNull(request.title(), userId))
-                .thenReturn(false);
         when(userRepository.getReferenceById(userId)).thenReturn(user);
 
         CreateJobResponse response = createJobUseCase.execute(request, userId);
@@ -70,9 +68,6 @@ class CreateJobUseCaseTest {
                 "Desenvolvedor Java",
                 "Crie e mantenha serviços Spring Boot."
         );
-
-        when(jobRepository.existsByTitleAndPublishedBy_IdAndDeletedAtIsNull(request.title(), userId))
-                .thenReturn(true);
 
         assertThatThrownBy(() -> createJobUseCase.execute(request, userId))
                 .isInstanceOf(ResponseStatusException.class)
