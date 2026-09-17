@@ -5,6 +5,11 @@ spring:
   config:
     import: optional:file:.env[.properties]
 
+  data:
+    web:
+      pageable:
+        default-page-size: 10
+
   datasource:
     url: jdbc:postgresql://localhost:${POSTGRES_PORT:5432}/${POSTGRES_DB:openjobs}
     username: ${POSTGRES_USER:openjobs}
