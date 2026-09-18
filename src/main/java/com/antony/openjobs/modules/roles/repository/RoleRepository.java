@@ -1,6 +1,9 @@
 package com.antony.openjobs.modules.roles.repository;
 
 import com.antony.openjobs.modules.roles.model.RoleEntity;
+import com.antony.openjobs.modules.roles.usecase.findall.FindAllRolesProjection;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -16,4 +19,6 @@ public interface RoleRepository extends JpaRepository<RoleEntity, UUID> {
     boolean existsByCodeAndDeletedAtIsNull(String code);
 
     boolean existsByCodeAndIdNotAndDeletedAtIsNull(String code, UUID id);
+
+    Page<FindAllRolesProjection> findAllByDeletedAtIsNull(Pageable pageable);
 }

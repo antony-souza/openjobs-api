@@ -1,6 +1,6 @@
 package com.antony.openjobs.modules.users.controller;
 
-import com.antony.openjobs.common.pagination.PaginationResponse;
+import com.antony.openjobs.common.pagination.IPaginationResponse;
 import com.antony.openjobs.modules.users.usecase.delete.DeleteUserUseCase;
 import com.antony.openjobs.modules.users.usecase.findall.FindAllUsersProjection;
 import com.antony.openjobs.modules.users.usecase.findall.FindAllUsersUseCase;
@@ -35,7 +35,7 @@ class UserControllerTest {
                 "antony@infojobs.com.br",
                 "Administrador"
         );
-        PaginationResponse<FindAllUsersProjection> pagination = new PaginationResponse<>(
+        IPaginationResponse<FindAllUsersProjection> pagination = new IPaginationResponse<>(
                 0,
                 10,
                 1,

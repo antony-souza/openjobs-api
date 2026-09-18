@@ -1,7 +1,7 @@
 package com.antony.openjobs.modules.users.controller;
 
 import com.antony.openjobs.common.api.ApiResponse;
-import com.antony.openjobs.common.pagination.PaginationResponse;
+import com.antony.openjobs.common.pagination.IPaginationResponse;
 import com.antony.openjobs.modules.users.usecase.delete.DeleteUserResponse;
 import com.antony.openjobs.modules.users.usecase.delete.DeleteUserUseCase;
 import com.antony.openjobs.modules.users.usecase.findall.FindAllUsersProjection;
@@ -27,7 +27,7 @@ public class UserController {
     private final DeleteUserUseCase deleteUserUseCase;
 
     @GetMapping()
-    public ResponseEntity<ApiResponse<PaginationResponse<FindAllUsersProjection>>> findAll(
+    public ResponseEntity<ApiResponse<IPaginationResponse<FindAllUsersProjection>>> findAll(
             Pageable requestPagination
     ) {
         return ResponseEntity

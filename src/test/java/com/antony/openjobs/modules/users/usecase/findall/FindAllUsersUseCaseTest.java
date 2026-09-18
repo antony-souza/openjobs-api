@@ -1,6 +1,6 @@
 package com.antony.openjobs.modules.users.usecase.findall;
 
-import com.antony.openjobs.common.pagination.PaginationResponse;
+import com.antony.openjobs.common.pagination.IPaginationResponse;
 import com.antony.openjobs.modules.users.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -40,7 +40,7 @@ class FindAllUsersUseCaseTest {
         when(userRepository.findAllByDeletedAtIsNull(pageable))
                 .thenReturn(new PageImpl<>(List.of(user), pageable, 21));
 
-        PaginationResponse<FindAllUsersProjection> response = findAllUsersUseCase.execute(pageable);
+        IPaginationResponse<FindAllUsersProjection> response = findAllUsersUseCase.execute(pageable);
 
         assertThat(response.page()).isEqualTo(1);
         assertThat(response.size()).isEqualTo(10);
@@ -55,7 +55,7 @@ class FindAllUsersUseCaseTest {
         when(userRepository.findAllByDeletedAtIsNull(pageable))
                 .thenReturn(new PageImpl<>(List.of(), pageable, 0));
 
-        PaginationResponse<FindAllUsersProjection> response = findAllUsersUseCase.execute(pageable);
+        IPaginationResponse<FindAllUsersProjection> response = findAllUsersUseCase.execute(pageable);
 
         assertThat(response.page()).isZero();
         assertThat(response.size()).isEqualTo(10);
