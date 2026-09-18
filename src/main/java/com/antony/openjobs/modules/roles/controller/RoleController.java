@@ -10,7 +10,6 @@ import com.antony.openjobs.modules.roles.usecase.findall.FindAllRolesUseCase;
 import com.antony.openjobs.modules.roles.usecase.update.UpdateRoleRequest;
 import com.antony.openjobs.modules.roles.usecase.update.UpdateRoleResponse;
 import com.antony.openjobs.modules.roles.usecase.update.UpdateRoleUseCase;
-import com.antony.openjobs.modules.users.usecase.findall.FindAllUsersUseCase;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
