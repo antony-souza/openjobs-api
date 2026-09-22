@@ -2,14 +2,15 @@ package com.antony.openjobs.modules.roles.controller;
 
 import com.antony.openjobs.common.api.ApiResponse;
 import com.antony.openjobs.common.pagination.IPaginationResponse;
+import com.antony.openjobs.modules.roles.repository.RoleRepository;
 import com.antony.openjobs.modules.roles.usecase.create.CreateRoleRequest;
 import com.antony.openjobs.modules.roles.usecase.create.CreateRoleResponse;
 import com.antony.openjobs.modules.roles.usecase.create.CreateRoleUseCase;
 import com.antony.openjobs.modules.roles.usecase.findall.FindAllRolesProjection;
-import com.antony.openjobs.modules.roles.usecase.findall.FindAllRolesUseCase;
 import com.antony.openjobs.modules.roles.usecase.update.UpdateRoleRequest;
 import com.antony.openjobs.modules.roles.usecase.update.UpdateRoleResponse;
 import com.antony.openjobs.modules.roles.usecase.update.UpdateRoleUseCase;
+import com.antony.openjobs.services.pagination.PaginationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -23,15 +24,20 @@ import java.util.UUID;
 @RequestMapping("/v1/roles")
 @RequiredArgsConstructor
 public class RoleController {
-    private final FindAllRolesUseCase findAllRolesUseCase;
+    private final RoleRepository roleRepository;
+    private final PaginationService paginationService;
     private final CreateRoleUseCase createRoleUseCase;
     private final UpdateRoleUseCase updateRoleUseCase;
 
     @GetMapping()
     public ResponseEntity<ApiResponse<IPaginationResponse<FindAllRolesProjection>>> findAll(Pageable pageable) {
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(ApiResponse.success(findAllRolesUseCase.execute(pageable)));
+        var response = paginationService.execute(
+                roleRepository,
+                pageable,
+                FindAllRolesProjection.class
+        );
+
+        return ResponseEntity.ok(ApiResponse.success(response));
     }
 
     @PostMapping()

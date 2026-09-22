@@ -1,12 +1,13 @@
 package com.antony.openjobs.modules.roles.controller;
 
 import com.antony.openjobs.common.pagination.IPaginationResponse;
+import com.antony.openjobs.modules.roles.repository.RoleRepository;
 import com.antony.openjobs.modules.roles.usecase.create.CreateRoleRequest;
 import com.antony.openjobs.modules.roles.usecase.create.CreateRoleResponse;
 import com.antony.openjobs.modules.roles.usecase.create.CreateRoleUseCase;
 import com.antony.openjobs.modules.roles.usecase.findall.FindAllRolesProjection;
-import com.antony.openjobs.modules.roles.usecase.findall.FindAllRolesUseCase;
 import com.antony.openjobs.modules.roles.usecase.update.UpdateRoleUseCase;
+import com.antony.openjobs.services.pagination.PaginationService;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -24,9 +25,11 @@ class RoleControllerTest {
 
     @Test
     void shouldReturnPagedRolesInASuccessfulApiResponse() {
-        FindAllRolesUseCase findAllRolesUseCase = mock(FindAllRolesUseCase.class);
+        RoleRepository roleRepository = mock(RoleRepository.class);
+        PaginationService paginationService = mock(PaginationService.class);
         RoleController controller = new RoleController(
-                findAllRolesUseCase,
+                roleRepository,
+                paginationService,
                 mock(CreateRoleUseCase.class),
                 mock(UpdateRoleUseCase.class)
         );
@@ -38,7 +41,8 @@ class RoleControllerTest {
                 21,
                 List.of(role)
         );
-        when(findAllRolesUseCase.execute(pageable)).thenReturn(pagination);
+        when(paginationService.execute(roleRepository, pageable, FindAllRolesProjection.class))
+                .thenReturn(pagination);
 
         var response = controller.findAll(pageable);
 
@@ -47,7 +51,7 @@ class RoleControllerTest {
         assertThat(response.getBody().success()).isTrue();
         assertThat(response.getBody().data()).isEqualTo(pagination);
         assertThat(response.getBody().errors()).isEmpty();
-        verify(findAllRolesUseCase).execute(pageable);
+        verify(paginationService).execute(roleRepository, pageable, FindAllRolesProjection.class);
     }
 
     @Test
@@ -55,7 +59,8 @@ class RoleControllerTest {
         CreateRoleUseCase useCase = mock(CreateRoleUseCase.class);
         UpdateRoleUseCase updateRoleUseCase = mock(UpdateRoleUseCase.class);
         RoleController controller = new RoleController(
-                mock(FindAllRolesUseCase.class),
+                mock(RoleRepository.class),
+                mock(PaginationService.class),
                 useCase,
                 updateRoleUseCase
         );

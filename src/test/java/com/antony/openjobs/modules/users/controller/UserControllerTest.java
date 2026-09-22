@@ -1,10 +1,11 @@
 package com.antony.openjobs.modules.users.controller;
 
 import com.antony.openjobs.common.pagination.IPaginationResponse;
+import com.antony.openjobs.modules.users.repository.UserRepository;
 import com.antony.openjobs.modules.users.usecase.delete.DeleteUserUseCase;
 import com.antony.openjobs.modules.users.usecase.findall.FindAllUsersProjection;
-import com.antony.openjobs.modules.users.usecase.findall.FindAllUsersUseCase;
 import com.antony.openjobs.modules.users.usecase.update.UpdateUserUseCase;
+import com.antony.openjobs.services.pagination.PaginationService;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -22,11 +23,13 @@ class UserControllerTest {
 
     @Test
     void shouldReturnPagedUsersInASuccessfulApiResponse() {
-        FindAllUsersUseCase findAllUsersUseCase = mock(FindAllUsersUseCase.class);
+        UserRepository userRepository = mock(UserRepository.class);
+        PaginationService paginationService = mock(PaginationService.class);
         UserController controller = new UserController(
-                findAllUsersUseCase,
                 mock(UpdateUserUseCase.class),
-                mock(DeleteUserUseCase.class)
+                mock(DeleteUserUseCase.class),
+                userRepository,
+                paginationService
         );
         Pageable pageable = PageRequest.of(0, 10);
         FindAllUsersProjection user = userProjection(
@@ -41,7 +44,8 @@ class UserControllerTest {
                 1,
                 List.of(user)
         );
-        when(findAllUsersUseCase.execute(pageable)).thenReturn(pagination);
+        when(paginationService.execute(userRepository, pageable, FindAllUsersProjection.class))
+                .thenReturn(pagination);
 
         var response = controller.findAll(pageable);
 
@@ -50,7 +54,7 @@ class UserControllerTest {
         assertThat(response.getBody().success()).isTrue();
         assertThat(response.getBody().data()).isEqualTo(pagination);
         assertThat(response.getBody().errors()).isEmpty();
-        verify(findAllUsersUseCase).execute(pageable);
+        verify(paginationService).execute(userRepository, pageable, FindAllUsersProjection.class);
     }
 
     private static FindAllUsersProjection userProjection(UUID id, String name, String email, String roleName) {

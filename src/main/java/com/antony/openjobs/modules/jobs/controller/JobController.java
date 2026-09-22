@@ -3,20 +3,19 @@ package com.antony.openjobs.modules.jobs.controller;
 import com.antony.openjobs.common.api.ApiResponse;
 import com.antony.openjobs.common.pagination.IPaginationResponse;
 import com.antony.openjobs.config.security.AuthenticatedUser;
+import com.antony.openjobs.modules.jobs.repository.JobRepository;
 import com.antony.openjobs.modules.jobs.usecase.create.CreateJobRequest;
 import com.antony.openjobs.modules.jobs.usecase.create.CreateJobResponse;
 import com.antony.openjobs.modules.jobs.usecase.create.CreateJobUseCase;
 import com.antony.openjobs.modules.jobs.usecase.delete.DeleteJobResponse;
 import com.antony.openjobs.modules.jobs.usecase.delete.DeleteJobUseCase;
 import com.antony.openjobs.modules.jobs.usecase.findall.FindAllJobsProjection;
-import com.antony.openjobs.modules.jobs.usecase.findall.FindAllJobsUseCase;
 import com.antony.openjobs.modules.jobs.usecase.update.UpdateJobRequest;
 import com.antony.openjobs.modules.jobs.usecase.update.UpdateJobResponse;
 import com.antony.openjobs.modules.jobs.usecase.update.UpdateJobUseCase;
-import com.antony.openjobs.modules.roles.usecase.findall.FindAllRolesProjection;
+import com.antony.openjobs.services.pagination.PaginationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,18 +28,23 @@ import java.util.UUID;
 @RequestMapping("/v1/jobs")
 @RequiredArgsConstructor
 public class JobController {
-    private final FindAllJobsUseCase findAllJobsUseCase;
     private final CreateJobUseCase createJobUseCase;
     private final UpdateJobUseCase updateJobUseCaseJobUseCase;
     private final DeleteJobUseCase deleteJobUseCase;
+    private final JobRepository jobRepository;
+    private final PaginationService paginationService;
 
     @GetMapping()
     public ResponseEntity<ApiResponse<IPaginationResponse<FindAllJobsProjection>>> findAll(
             Pageable pageable
     ) {
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(ApiResponse.success(findAllJobsUseCase.execute(pageable)));
+        var response = paginationService.execute(
+                jobRepository,
+                pageable,
+                FindAllJobsProjection.class
+        );
+
+        return ResponseEntity.ok(ApiResponse.success(response));
     }
 
     @PostMapping()

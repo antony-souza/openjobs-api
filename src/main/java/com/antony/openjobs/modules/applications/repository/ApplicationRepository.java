@@ -1,5 +1,6 @@
 package com.antony.openjobs.modules.applications.repository;
 
+import com.antony.openjobs.common.repositories.IBaseRepository;
 import com.antony.openjobs.modules.applications.model.ApplicationEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -10,7 +11,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface ApplicationRepository extends JpaRepository<ApplicationEntity, UUID> {
+public interface ApplicationRepository extends IBaseRepository<ApplicationEntity, UUID> {
 
     Optional<ApplicationEntity> findByIdAndDeletedAtIsNull(UUID id);
 
