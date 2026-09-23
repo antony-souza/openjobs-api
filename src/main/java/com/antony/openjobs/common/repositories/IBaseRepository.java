@@ -1,6 +1,5 @@
 package com.antony.openjobs.common.repositories;
 
-import com.antony.openjobs.common.entities.BaseEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
