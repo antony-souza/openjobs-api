@@ -28,59 +28,51 @@ import java.util.UUID;
 @RequestMapping("/v1/jobs")
 @RequiredArgsConstructor
 public class JobController {
-    private final CreateJobUseCase createJobUseCase;
-    private final UpdateJobUseCase updateJobUseCaseJobUseCase;
-    private final DeleteJobUseCase deleteJobUseCase;
-    private final JobRepository jobRepository;
-    private final PaginationService paginationService;
+        private final CreateJobUseCase createJobUseCase;
+        private final UpdateJobUseCase updateJobUseCaseJobUseCase;
+        private final DeleteJobUseCase deleteJobUseCase;
+        private final JobRepository jobRepository;
+        private final PaginationService paginationService;
 
-    @GetMapping()
-    public ResponseEntity<ApiResponse<IPaginationResponse<FindAllJobsProjection>>> findAll(
-            Pageable pageable
-    ) {
-        var response = paginationService.execute(
-                jobRepository,
-                pageable,
-                FindAllJobsProjection.class
-        );
+        @GetMapping()
+        public ResponseEntity<ApiResponse<IPaginationResponse<FindAllJobsProjection>>> findAll(
+                        Pageable pageable) {
+                var response = paginationService.execute(
+                                jobRepository,
+                                pageable,
+                                FindAllJobsProjection.class);
 
-        return ResponseEntity.ok(ApiResponse.success(response));
-    }
+                return ResponseEntity.ok(ApiResponse.success(response));
+        }
 
-    @PostMapping()
-    public ResponseEntity<ApiResponse<CreateJobResponse>> create(
-            @Valid @RequestBody CreateJobRequest request,
-            @AuthenticationPrincipal AuthenticatedUser loggedUser
-    ) {
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(ApiResponse.success(
-                        createJobUseCase.execute(request, loggedUser.userId())
-                ));
-    }
+        @PostMapping()
+        public ResponseEntity<ApiResponse<CreateJobResponse>> create(
+                        @Valid @RequestBody CreateJobRequest request,
+                        @AuthenticationPrincipal AuthenticatedUser loggedUser) {
+                return ResponseEntity
+                                .status(HttpStatus.CREATED)
+                                .body(ApiResponse.success(
+                                                createJobUseCase.execute(request, loggedUser.userId())));
+        }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<UpdateJobResponse>> create(
-            @PathVariable("id") UUID jobId,
-            @Valid @RequestBody UpdateJobRequest request,
-            @AuthenticationPrincipal AuthenticatedUser loggedUser
-    ) {
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(ApiResponse.success(
-                        updateJobUseCaseJobUseCase.execute(jobId, request, loggedUser.userId())
-                ));
-    }
+        @PutMapping("/{id}")
+        public ResponseEntity<ApiResponse<UpdateJobResponse>> create(
+                        @PathVariable("id") UUID jobId,
+                        @Valid @RequestBody UpdateJobRequest request,
+                        @AuthenticationPrincipal AuthenticatedUser loggedUser) {
+                return ResponseEntity
+                                .status(HttpStatus.OK)
+                                .body(ApiResponse.success(
+                                                updateJobUseCaseJobUseCase.execute(jobId, request,
+                                                                loggedUser.userId())));
+        }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<DeleteJobResponse>> delete(
-            @PathVariable("id") UUID jobId,
-            @AuthenticationPrincipal AuthenticatedUser loggedUser
-    ) {
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(ApiResponse.success((
-                        deleteJobUseCase.execute(jobId, loggedUser.userId()))
-                ));
-    }
+        @DeleteMapping("/{id}")
+        public ResponseEntity<ApiResponse<DeleteJobResponse>> delete(
+                        @PathVariable("id") UUID jobId,
+                        @AuthenticationPrincipal AuthenticatedUser loggedUser) {
+                return ResponseEntity
+                                .status(HttpStatus.OK)
+                                .body(ApiResponse.success((deleteJobUseCase.execute(jobId, loggedUser.userId()))));
+        }
 }
