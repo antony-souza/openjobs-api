@@ -19,14 +19,14 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/v1/applications")
 @RequiredArgsConstructor
 public class ApplicationController {
-    private final FindAllApplicationsByCandidateIdUseCase findAllApplicationsUseCase;
+    private final FindAllApplicationsByCandidateIdUseCase findAllApplicationsByCandidateIdUseCase;
 
     @GetMapping()
-    public ResponseEntity<ApiResponse<IPaginationResponse<FindAllApplicationsByCandidateIdProjection>>> findAll(
+    public ResponseEntity<ApiResponse<IPaginationResponse<FindAllApplicationsByCandidateIdProjection>>> findAllApplicationsByCandidateIdUseCase(
             @AuthenticationPrincipal AuthenticatedUser loggedUser,
             Pageable pageable) {
 
-        var response = findAllApplicationsUseCase.execute(loggedUser.userId(), pageable);
+        var response = findAllApplicationsByCandidateIdUseCase.execute(loggedUser.userId(), pageable);
 
         return ResponseEntity.ok(ApiResponse.success(response));
     }
