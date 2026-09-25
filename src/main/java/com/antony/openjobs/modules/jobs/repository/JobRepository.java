@@ -12,4 +12,5 @@ public interface JobRepository extends IBaseRepository<JobEntity, UUID> {
     Optional<JobEntity> findByIdAndPublishedBy_IdAndDeletedAtIsNull(UUID id, UUID publishedById);
 
     boolean existsByTitleAndPublishedBy_IdAndDeletedAtIsNull(String title, UUID publishedById);
+    Optional<JobEntity> findByIdAndDeletedAtIsNull(UUID id);
 }

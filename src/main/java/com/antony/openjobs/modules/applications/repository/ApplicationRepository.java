@@ -7,6 +7,8 @@ import com.antony.openjobs.modules.applications.usecase.findall.FindAllApplicati
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
+
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
@@ -14,4 +16,8 @@ public interface ApplicationRepository extends IBaseRepository<ApplicationEntity
     Page<FindAllApplicationsByCandidateIdProjection> findAllByCandidate_IdAndDeletedAtIsNull(
             UUID candidateId,
             Pageable pageable);
+
+    boolean existsByCandidateIdAndJobIdAndDeletedAtIsNull(UUID candidateId, UUID jobId);
+
+    Optional<ApplicationEntity> findByIdAndCandidateIdAndDeletedAtIsNull(UUID id, UUID candidateId);
 }
