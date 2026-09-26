@@ -23,26 +23,29 @@ class TokenProviderTest {
 
     @Test
     void shouldGenerateValidTokenWithUserIdAsSubject() {
-        var token = tokenProvider.generateToken("user-id");
+        UUID userId = UUID.randomUUID();
+        UUID roleId = UUID.randomUUID();
+        var token = tokenProvider.generateToken(userId, roleId);
 
         assertThat(tokenProvider.isTokenValid(token)).isTrue();
-        assertThat(tokenProvider.getSubject(token)).isEqualTo("user-id");
+        assertThat(tokenProvider.getSubject(token)).isEqualTo(userId.toString());
     }
 
     @Test
     void shouldRejectModifiedToken() {
-        var token = tokenProvider.generateToken("user-id");
+        var token = tokenProvider.generateToken(UUID.randomUUID(), UUID.randomUUID());
 
         assertThat(tokenProvider.isTokenValid(token + "invalid")).isFalse();
     }
 
     @Test
-    void shouldReadUserIdFromToken() {
+    void shouldReadUserAndRoleIdsFromToken() {
         UUID userId = UUID.randomUUID();
+        UUID roleId = UUID.randomUUID();
 
-        var token = tokenProvider.generateToken(userId.toString());
+        var token = tokenProvider.generateToken(userId, roleId);
 
         assertThat(tokenProvider.getAuthenticatedUser(token))
-                .isEqualTo(new AuthenticatedUser(userId));
+                .isEqualTo(new AuthenticatedUser(userId, roleId));
     }
 }

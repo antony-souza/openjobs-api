@@ -68,7 +68,7 @@ class SignUpUseCaseTest {
         when(roleRepository.findByIdAndDeletedAtIsNull(roleId)).thenReturn(Optional.of(role));
         when(passwordEncoder.encode("password123")).thenReturn("encoded-password");
         when(userRepository.save(any(UserEntity.class))).thenReturn(savedUser);
-        when(tokenProvider.generateToken(userId.toString())).thenReturn("jwt-token");
+        when(tokenProvider.generateToken(userId, roleId)).thenReturn("jwt-token");
 
         var response = signUpUseCase.execute(request);
 
@@ -90,7 +90,7 @@ class SignUpUseCaseTest {
                         "Sua conta foi criada com sucesso."
                 )
         );
-        verify(tokenProvider).generateToken(userId.toString());
+        verify(tokenProvider).generateToken(userId, roleId);
     }
 
     @Test

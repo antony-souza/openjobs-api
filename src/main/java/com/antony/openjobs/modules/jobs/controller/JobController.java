@@ -3,6 +3,7 @@ package com.antony.openjobs.modules.jobs.controller;
 import com.antony.openjobs.common.api.ApiResponse;
 import com.antony.openjobs.common.pagination.IPaginationResponse;
 import com.antony.openjobs.config.security.AuthenticatedUser;
+import com.antony.openjobs.config.security.RequiresPermission;
 import com.antony.openjobs.modules.jobs.repository.JobRepository;
 import com.antony.openjobs.modules.jobs.usecase.create.CreateJobRequest;
 import com.antony.openjobs.modules.jobs.usecase.create.CreateJobResponse;
@@ -13,6 +14,7 @@ import com.antony.openjobs.modules.jobs.usecase.findall.FindAllJobsProjection;
 import com.antony.openjobs.modules.jobs.usecase.update.UpdateJobRequest;
 import com.antony.openjobs.modules.jobs.usecase.update.UpdateJobResponse;
 import com.antony.openjobs.modules.jobs.usecase.update.UpdateJobUseCase;
+import com.antony.openjobs.modules.permissions.model.Permission;
 import com.antony.openjobs.services.pagination.PaginationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +36,7 @@ public class JobController {
         private final JobRepository jobRepository;
         private final PaginationService paginationService;
 
+        @RequiresPermission(Permission.JOB_READ)
         @GetMapping()
         public ResponseEntity<ApiResponse<IPaginationResponse<FindAllJobsProjection>>> findAll(
                         Pageable pageable) {
@@ -45,6 +48,7 @@ public class JobController {
                 return ResponseEntity.ok(ApiResponse.success(response));
         }
 
+        @RequiresPermission(Permission.JOB_CREATE)
         @PostMapping()
         public ResponseEntity<ApiResponse<CreateJobResponse>> create(
                         @Valid @RequestBody CreateJobRequest request,
@@ -55,6 +59,7 @@ public class JobController {
                                                 createJobUseCase.execute(request, loggedUser.userId())));
         }
 
+        @RequiresPermission(Permission.JOB_UPDATE)
         @PutMapping("/{id}")
         public ResponseEntity<ApiResponse<UpdateJobResponse>> create(
                         @PathVariable("id") UUID jobId,
@@ -67,6 +72,7 @@ public class JobController {
                                                                 loggedUser.userId())));
         }
 
+        @RequiresPermission(Permission.JOB_DELETE)
         @DeleteMapping("/{id}")
         public ResponseEntity<ApiResponse<DeleteJobResponse>> delete(
                         @PathVariable("id") UUID jobId,

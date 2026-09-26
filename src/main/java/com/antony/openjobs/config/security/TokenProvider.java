@@ -26,14 +26,15 @@ public class TokenProvider {
         );
     }
 
-    public String generateToken(String userId) {
+    public String generateToken(UUID userId, UUID roleId) {
         Date now = new Date();
         Date expiration = new Date(
                 now.getTime() + jwtExpiration
         );
 
         return Jwts.builder()
-                .subject(userId)
+                .subject(userId.toString())
+                .claim("roleId", roleId.toString())
                 .issuedAt(now)
                 .expiration(expiration)
                 .signWith(getSigningKey())
@@ -46,12 +47,15 @@ public class TokenProvider {
 
     public AuthenticatedUser getAuthenticatedUser(String token) {
         Claims claims = getClaims(token);
-        return new AuthenticatedUser(UUID.fromString(claims.getSubject()));
+        return new AuthenticatedUser(
+                UUID.fromString(claims.getSubject()),
+                UUID.fromString(claims.get("roleId", String.class))
+        );
     }
 
     public boolean isTokenValid(String token) {
         try {
-            getClaims(token);
+            getAuthenticatedUser(token);
             return true;
         } catch (Exception exception) {
             return false;

@@ -11,6 +11,8 @@ import java.util.UUID;
 public interface UserRepository extends IBaseRepository<UserEntity, UUID> {
     Optional<UserEntity> findByEmail(String email);
 
+    Optional<UserEntity> findByEmailAndDeletedAtIsNull(String email);
+
     boolean existsByEmailAndDeletedAtIsNull(String email);
 
     boolean existsByUsernameAndDeletedAtIsNull(String username);

@@ -1,6 +1,7 @@
 package com.antony.openjobs.modules.auth.signin;
 
 import com.antony.openjobs.config.security.TokenProvider;
+import com.antony.openjobs.modules.roles.model.RoleEntity;
 import com.antony.openjobs.modules.users.model.UserEntity;
 import com.antony.openjobs.modules.users.repository.UserRepository;
 import org.junit.jupiter.api.Test;
@@ -17,6 +18,7 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -41,26 +43,30 @@ class SignInUseCaseTest {
     void shouldAuthenticateUserWithValidCredentials() {
         var request = new SignInRequest("antony@example.com", "password123");
         var userId = UUID.randomUUID();
+        var roleId = UUID.randomUUID();
+        var role = new RoleEntity();
+        role.setId(roleId);
         var user = new UserEntity();
         user.setId(userId);
         user.setEmail("antony@example.com");
         user.setPassword("encoded-password");
+        user.setRole(role);
 
-        when(userRepository.findByEmail("antony@example.com")).thenReturn(Optional.of(user));
+        when(userRepository.findByEmailAndDeletedAtIsNull("antony@example.com")).thenReturn(Optional.of(user));
         when(passwordEncoder.matches("password123", "encoded-password")).thenReturn(true);
-        when(tokenProvider.generateToken(userId.toString())).thenReturn("jwt-token");
+        when(tokenProvider.generateToken(userId, roleId)).thenReturn("jwt-token");
 
         var response = signInUseCase.execute(request);
 
         assertThat(response.token()).isEqualTo("jwt-token");
         verify(passwordEncoder).matches("password123", "encoded-password");
-        verify(tokenProvider).generateToken(userId.toString());
+        verify(tokenProvider).generateToken(userId, roleId);
     }
 
     @Test
     void shouldRejectAuthenticationWhenEmailDoesNotExist() {
         var request = new SignInRequest("missing@example.com", "password123");
-        when(userRepository.findByEmail("missing@example.com")).thenReturn(Optional.empty());
+        when(userRepository.findByEmailAndDeletedAtIsNull("missing@example.com")).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> signInUseCase.execute(request))
                 .isInstanceOfSatisfying(ResponseStatusException.class, exception -> {
@@ -77,7 +83,7 @@ class SignInUseCaseTest {
         var user = new UserEntity();
         user.setPassword("encoded-password");
 
-        when(userRepository.findByEmail("antony@example.com")).thenReturn(Optional.of(user));
+        when(userRepository.findByEmailAndDeletedAtIsNull("antony@example.com")).thenReturn(Optional.of(user));
         when(passwordEncoder.matches("wrong-password", "encoded-password")).thenReturn(false);
 
         assertThatThrownBy(() -> signInUseCase.execute(request))
@@ -86,6 +92,6 @@ class SignInUseCaseTest {
                     assertThat(exception.getReason()).isEqualTo("Email ou senha inválidos");
                 });
 
-        verify(tokenProvider, never()).generateToken(org.mockito.ArgumentMatchers.anyString());
+        verify(tokenProvider, never()).generateToken(any(), any());
     }
 }

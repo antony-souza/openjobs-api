@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 @Service
@@ -16,9 +17,10 @@ public class SignInUseCase {
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
 
+    @Transactional(readOnly = true)
     public SignInResponse execute(SignInRequest request) {
         UserEntity user = userRepository
-                .findByEmail(request.email())
+                .findByEmailAndDeletedAtIsNull(request.email())
                 .orElseThrow(this::invalidCredentials);
 
         boolean passwordMatch = passwordEncoder.matches(request.password(), user.getPassword());
@@ -27,7 +29,7 @@ public class SignInUseCase {
             throw invalidCredentials();
         }
 
-        String token = tokenProvider.generateToken(user.getId().toString());
+        String token = tokenProvider.generateToken(user.getId(), user.getRole().getId());
 
         return new SignInResponse(token);
     }

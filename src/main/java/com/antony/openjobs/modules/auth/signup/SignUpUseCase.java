@@ -64,7 +64,7 @@ public class SignUpUseCase {
                         "Sua conta foi criada com sucesso."
                 )
         );
-        String token = tokenProvider.generateToken(createdUser.getId().toString());
+        String token = tokenProvider.generateToken(createdUser.getId(), role.getId());
 
         return new SignUpResponse("Conta criada com sucesso", token);
     }
