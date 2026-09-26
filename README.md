@@ -8,9 +8,10 @@ O **OpenJobs** é uma API REST para uma plataforma de vagas. O projeto foi const
 
 Atualmente, a API possui fundamentos para:
 
-- Cadastro e autenticação de usuários com JWT.
-- Criação e atualização de roles.
-- Criação de vagas por usuários autenticados.
+- Cadastro e autenticação de usuários com JWT contendo os IDs do usuário e da role.
+- Gerenciamento de usuários e roles.
+- Criação, listagem, atualização e exclusão de vagas, além de candidaturas.
+- Autorização por permissões vinculadas a roles nas rotas de vagas.
 - Persistência com PostgreSQL e versionamento de schema via Flyway.
 - Envio assíncrono de e-mails via RabbitMQ.
 - Documentação interativa com OpenAPI/Swagger.
@@ -51,7 +52,9 @@ src/main/java/com/antony/openjobs/
 ├── modules/
 │   ├── auth/           # Sign-up e sign-in
 │   ├── users/          # Usuários
-│   ├── roles/          # Roles e regras de autorização
+│   ├── roles/          # Roles
+│   ├── permissions/    # Catálogo de permissões
+│   ├── rolepermissions/ # Vínculos entre roles e permissões
 │   ├── jobs/           # Vagas
 │   └── applications/   # Candidaturas
 ├── services/           # Serviços de e-mail e fila
@@ -60,11 +63,13 @@ src/main/java/com/antony/openjobs/
 
 ## Modelo de dados
 
-As migrations do Flyway criam as entidades principais: `users`, `roles`, `jobs` e `applications`.
+As migrations do Flyway criam as tabelas `users`, `roles`, `permissions`, `role_permissions`, `jobs` e `applications`.
 
 ```mermaid
 erDiagram
     ROLE ||--o{ USER : "atribui"
+    ROLE ||--o{ ROLE_PERMISSION : "recebe"
+    PERMISSION ||--o{ ROLE_PERMISSION : "é concedida por"
     USER ||--o{ JOB : "publica"
     USER ||--o{ APPLICATION : "realiza"
     JOB ||--o{ APPLICATION : "recebe"
@@ -74,6 +79,17 @@ erDiagram
         string name
         string code
         int level
+    }
+    PERMISSION {
+        UUID id
+        string name
+        string code
+        string description
+    }
+    ROLE_PERMISSION {
+        UUID id
+        UUID role_id
+        UUID permission_id
     }
     USER {
         UUID id
@@ -94,6 +110,44 @@ erDiagram
         string status
     }
 ```
+
+## Autenticação e permissões
+
+No login e no cadastro, a API emite um JWT com `userId` no *subject* e `roleId` em um *claim*. O filtro JWT valida o token e disponibiliza esses IDs no `AuthenticatedUser` da requisição.
+
+Para proteger um método do controller, use uma constante do enum `Permission`:
+
+```java
+@RequiresPermission(Permission.JOB_CREATE)
+@PostMapping
+public ResponseEntity<?> create(...) {
+    // ...
+}
+```
+
+O Spring intercepta métodos com `@RequiresPermission` antes de executá-los. O verificador lê o código da constante (`JOB_CREATE`, no exemplo) e consulta `role_permissions` para saber se a role do token está vinculada a uma permissão ativa com esse código. Sem o vínculo, a API responde `403 Forbidden` com a mensagem `Você não tem permissão para esta ação`.
+
+Hoje, `@RequiresPermission` está aplicada às quatro operações de `/v1/jobs`. Os demais códigos já existem no enum e podem ser usados nos respectivos controllers.
+
+| Código | Operação |
+| --- | --- |
+| `USER_READ` | Listar usuários |
+| `USER_UPDATE` | Atualizar dados e role de um usuário |
+| `USER_DELETE` | Desativar um usuário |
+| `ROLE_READ` | Listar roles |
+| `ROLE_CREATE` | Criar uma role |
+| `ROLE_UPDATE` | Atualizar nome, código e nível de uma role |
+| `JOB_READ` | Listar vagas |
+| `JOB_CREATE` | Publicar uma vaga |
+| `JOB_UPDATE` | Atualizar uma vaga publicada pelo próprio usuário |
+| `JOB_DELETE` | Excluir uma vaga publicada pelo próprio usuário |
+| `APPLICATION_READ` | Listar as próprias candidaturas |
+| `APPLICATION_CREATE` | Candidatar-se a uma vaga |
+| `APPLICATION_DELETE` | Retirar uma candidatura própria |
+
+A migration V8 cria as tabelas, mas não cadastra permissões nem as atribui a roles. Em um banco novo, cadastre as permissões com `code` igual ao valor do enum e crie os vínculos em `role_permissions`. A role `founder` do banco local recebeu os 13 vínculos diretamente no PostgreSQL; esse dado não é recriado pelas migrations.
+
+Como `roleId` fica no JWT, uma mudança de role do usuário exige novo login. Mudanças nos vínculos de permissão da mesma role passam a valer na próxima requisição.
 
 ## Executando localmente
 
