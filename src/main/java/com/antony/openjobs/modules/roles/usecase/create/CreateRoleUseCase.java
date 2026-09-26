@@ -3,13 +3,8 @@ package com.antony.openjobs.modules.roles.usecase.create;
 import com.antony.openjobs.modules.roles.model.RoleEntity;
 import com.antony.openjobs.modules.roles.repository.RoleRepository;
 import com.antony.openjobs.modules.roles.services.RoleValidationService;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
-
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor

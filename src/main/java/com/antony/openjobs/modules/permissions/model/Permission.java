@@ -1,6 +1,10 @@
 package com.antony.openjobs.modules.permissions.model;
 
 public enum Permission {
+    PERMISSION_READ("PERMISSION_READ"),
+    PERMISSION_CREATE("PERMISSION_CREATE"),
+    PERMISSION_UPDATE("PERMISSION_UPDATE"),
+    PERMISSION_DELETE("PERMISSION_DELETE"),
     USER_READ("USER_READ"),
     USER_UPDATE("USER_UPDATE"),
     USER_DELETE("USER_DELETE"),
