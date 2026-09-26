@@ -127,7 +127,7 @@ public ResponseEntity<?> create(...) {
 
 O Spring intercepta métodos com `@RequiresPermission` antes de executá-los. O verificador lê o código da constante (`JOB_CREATE`, no exemplo) e consulta `role_permissions` para saber se a role do token está vinculada a uma permissão ativa com esse código. Sem o vínculo, a API responde `403 Forbidden` com a mensagem `Você não tem permissão para esta ação`.
 
-Hoje, `@RequiresPermission` está aplicada às quatro operações de `/v1/jobs`. Os demais códigos já existem no enum e podem ser usados nos respectivos controllers.
+`@RequiresPermission` está aplicada a todas as operações de `/v1/users`, `/v1/roles`, `/v1/jobs` e `/v1/applications`, com o código correspondente a cada método HTTP. As rotas públicas de login e cadastro em `/v1/auth` não exigem permissão.
 
 | Código | Operação |
 | --- | --- |

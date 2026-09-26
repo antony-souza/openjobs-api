@@ -2,6 +2,8 @@ package com.antony.openjobs.modules.users.controller;
 
 import com.antony.openjobs.common.api.ApiResponse;
 import com.antony.openjobs.common.pagination.IPaginationResponse;
+import com.antony.openjobs.config.security.RequiresPermission;
+import com.antony.openjobs.modules.permissions.model.Permission;
 import com.antony.openjobs.modules.users.repository.UserRepository;
 import com.antony.openjobs.modules.users.usecase.delete.DeleteUserResponse;
 import com.antony.openjobs.modules.users.usecase.delete.DeleteUserUseCase;
@@ -28,6 +30,7 @@ public class UserController {
     private final UserRepository userRepository;
     private final PaginationService paginationService;
 
+    @RequiresPermission(Permission.USER_READ)
     @GetMapping()
     public ResponseEntity<ApiResponse<IPaginationResponse<FindAllUsersProjection>>> findAll(
             Pageable pageable
@@ -41,6 +44,7 @@ public class UserController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
+    @RequiresPermission(Permission.USER_UPDATE)
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<UpdateUserResponse>> update(
             @PathVariable("id") UUID userId,
@@ -51,6 +55,7 @@ public class UserController {
                 .body(ApiResponse.success(updateUserUseCase.execute(userId, updateUserRequest)));
     }
 
+    @RequiresPermission(Permission.USER_DELETE)
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<DeleteUserResponse>> update(
             @PathVariable("id") UUID userId

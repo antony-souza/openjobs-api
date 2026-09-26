@@ -2,6 +2,8 @@ package com.antony.openjobs.modules.roles.controller;
 
 import com.antony.openjobs.common.api.ApiResponse;
 import com.antony.openjobs.common.pagination.IPaginationResponse;
+import com.antony.openjobs.config.security.RequiresPermission;
+import com.antony.openjobs.modules.permissions.model.Permission;
 import com.antony.openjobs.modules.roles.repository.RoleRepository;
 import com.antony.openjobs.modules.roles.usecase.create.CreateRoleRequest;
 import com.antony.openjobs.modules.roles.usecase.create.CreateRoleResponse;
@@ -29,6 +31,7 @@ public class RoleController {
     private final CreateRoleUseCase createRoleUseCase;
     private final UpdateRoleUseCase updateRoleUseCase;
 
+    @RequiresPermission(Permission.ROLE_READ)
     @GetMapping()
     public ResponseEntity<ApiResponse<IPaginationResponse<FindAllRolesProjection>>> findAll(Pageable pageable) {
         var response = paginationService.execute(
@@ -40,6 +43,7 @@ public class RoleController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
+    @RequiresPermission(Permission.ROLE_CREATE)
     @PostMapping()
     public ResponseEntity<ApiResponse<CreateRoleResponse>> create(
             @Valid @RequestBody CreateRoleRequest request
@@ -49,6 +53,7 @@ public class RoleController {
                 .body(ApiResponse.success(createRoleUseCase.execute(request)));
     }
 
+    @RequiresPermission(Permission.ROLE_UPDATE)
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<UpdateRoleResponse>> update(
             @PathVariable UUID id,

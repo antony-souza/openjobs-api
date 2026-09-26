@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.antony.openjobs.common.pagination.IPaginationResponse;
 import com.antony.openjobs.config.security.AuthenticatedUser;
+import com.antony.openjobs.config.security.RequiresPermission;
 import com.antony.openjobs.modules.applications.usecase.create.CreateApplicationRequest;
 import com.antony.openjobs.modules.applications.usecase.create.CreateApplicationResponse;
 import com.antony.openjobs.modules.applications.usecase.create.CreateApplicationUseCase;
@@ -21,6 +22,7 @@ import com.antony.openjobs.modules.applications.usecase.delete.DeleteApplication
 import com.antony.openjobs.modules.applications.usecase.delete.DeleteApplicationUseCase;
 import com.antony.openjobs.modules.applications.usecase.findall.FindAllApplicationsByCandidateIdProjection;
 import com.antony.openjobs.modules.applications.usecase.findall.FindAllApplicationsByCandidateIdUseCase;
+import com.antony.openjobs.modules.permissions.model.Permission;
 
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import jakarta.validation.Valid;
@@ -36,6 +38,7 @@ public class ApplicationController {
     private final CreateApplicationUseCase createApplicationUseCase;
     private final DeleteApplicationUseCase deleteApplicationUseCase;
 
+    @RequiresPermission(Permission.APPLICATION_READ)
     @GetMapping()
     public ResponseEntity<ApiResponse<IPaginationResponse<FindAllApplicationsByCandidateIdProjection>>> findAllByCandidateId(
             @AuthenticationPrincipal AuthenticatedUser loggedUser,
@@ -46,6 +49,7 @@ public class ApplicationController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
+    @RequiresPermission(Permission.APPLICATION_CREATE)
     @PostMapping()
     public ResponseEntity<ApiResponse<CreateApplicationResponse>> create(
             @AuthenticationPrincipal AuthenticatedUser loggedUser,
@@ -56,6 +60,7 @@ public class ApplicationController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
+    @RequiresPermission(Permission.APPLICATION_DELETE)
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<DeleteApplicationResponse>> delete(
             @AuthenticationPrincipal AuthenticatedUser loggedUser,
