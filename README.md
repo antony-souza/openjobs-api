@@ -127,10 +127,18 @@ public ResponseEntity<?> create(...) {
 
 O Spring intercepta métodos com `@RequiresPermission` antes de executá-los. O verificador lê o código da constante (`JOB_CREATE`, no exemplo) e consulta `role_permissions` para saber se a role do token está vinculada a uma permissão ativa com esse código. Sem o vínculo, a API responde `403 Forbidden` com a mensagem `Você não tem permissão para esta ação`.
 
-`@RequiresPermission` está aplicada a todas as operações de `/v1/users`, `/v1/roles`, `/v1/jobs` e `/v1/applications`, com o código correspondente a cada método HTTP. As rotas públicas de login e cadastro em `/v1/auth` não exigem permissão.
+`@RequiresPermission` está aplicada às operações existentes de `/v1/users`, `/v1/roles`, `/v1/jobs`, `/v1/applications`, `/v1/permissions` e `/v1/role-permissions`, com o código correspondente a cada método HTTP. As rotas públicas de login e cadastro em `/v1/auth` não exigem permissão.
 
 | Código | Operação |
 | --- | --- |
+| `PERMISSION_READ` | Listar permissões |
+| `PERMISSION_CREATE` | Criar uma permissão |
+| `PERMISSION_UPDATE` | Atualizar uma permissão |
+| `PERMISSION_DELETE` | Desativar uma permissão |
+| `ROLEPERMISSION_READ` | Listar vínculos entre roles e permissões |
+| `ROLEPERMISSION_CREATE` | Vincular uma permissão a uma role |
+| `ROLEPERMISSION_UPDATE` | Atualizar um vínculo entre role e permissão |
+| `ROLEPERMISSION_DELETE` | Revogar uma permissão de uma role |
 | `USER_READ` | Listar usuários |
 | `USER_UPDATE` | Atualizar dados e role de um usuário |
 | `USER_DELETE` | Desativar um usuário |
@@ -145,7 +153,7 @@ O Spring intercepta métodos com `@RequiresPermission` antes de executá-los. O 
 | `APPLICATION_CREATE` | Candidatar-se a uma vaga |
 | `APPLICATION_DELETE` | Retirar uma candidatura própria |
 
-A migration V8 cria as tabelas, mas não cadastra permissões nem as atribui a roles. Em um banco novo, cadastre as permissões com `code` igual ao valor do enum e crie os vínculos em `role_permissions`. A role `founder` do banco local recebeu os 13 vínculos diretamente no PostgreSQL; esse dado não é recriado pelas migrations.
+A migration V8 cria as tabelas, mas não cadastra permissões nem as atribui a roles. Em um banco novo, cadastre as permissões com `code` igual ao valor do enum e crie os vínculos em `role_permissions`. A role `founder` do banco local recebeu os 21 vínculos diretamente no PostgreSQL; esse dado não é recriado pelas migrations.
 
 Como `roleId` fica no JWT, uma mudança de role do usuário exige novo login. Mudanças nos vínculos de permissão da mesma role passam a valer na próxima requisição.
 
