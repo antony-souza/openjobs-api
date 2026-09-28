@@ -35,8 +35,8 @@ O código é organizado por domínio. Cada módulo reúne controller, entidade, 
 ```mermaid
 flowchart LR
     Client[Cliente] -->|HTTP / JSON| Security[Spring Security + JWT]
-    Security --> AuthenticatedUser[Usuário autenticado<br/>userId + roleId]
-    AuthenticatedUser --> Authorization[RBAC<br/>@RequiresPermission]
+    Security --> AuthenticatedUser["Usuário autenticado: userId + roleId"]
+    AuthenticatedUser --> Authorization["RBAC: @RequiresPermission"]
     Authorization -->|permitido| Controller[Controllers]
     Authorization -->|negado| Forbidden[403 Forbidden]
     Controller --> UseCase[Use cases]
