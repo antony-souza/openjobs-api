@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
@@ -19,6 +20,7 @@ import software.amazon.awssdk.services.s3.model.S3Exception;
 
 @Service
 @RequiredArgsConstructor
+@ConditionalOnProperty(prefix = "cloudflare.r2", name = "enabled", havingValue = "true")
 public class R2FileUploadService implements IFileUploadService {
 
     private static final String DEFAULT_CONTENT_TYPE = "application/octet-stream";

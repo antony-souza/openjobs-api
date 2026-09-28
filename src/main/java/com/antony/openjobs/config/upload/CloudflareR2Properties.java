@@ -7,6 +7,7 @@ import org.springframework.validation.annotation.Validated;
 @Validated
 @ConfigurationProperties(prefix = "cloudflare.r2")
 public record CloudflareR2Properties(
+        boolean enabled,
         @NotBlank String accountId,
         @NotBlank String accessKeyId,
         @NotBlank String secretAccessKey,

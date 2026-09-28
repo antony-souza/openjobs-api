@@ -3,7 +3,7 @@ package com.antony.openjobs;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
+@SpringBootTest(properties = "R2_ENABLED=false")
 class OpenjobsApplicationTests {
 
 	@Test

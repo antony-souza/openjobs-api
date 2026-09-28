@@ -8,11 +8,13 @@ import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Configuration;
 import software.amazon.awssdk.services.s3.S3Client;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @EnableConfigurationProperties(CloudflareR2Properties.class)
+@ConditionalOnProperty(prefix = "cloudflare.r2", name = "enabled", havingValue = "true")
 public class CloudflareR2Config {
 
     @Bean
