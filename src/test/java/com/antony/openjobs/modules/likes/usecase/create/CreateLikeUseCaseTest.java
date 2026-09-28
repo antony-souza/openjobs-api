@@ -60,8 +60,6 @@ class CreateLikeUseCaseTest {
     void shouldRejectCreateWhenLikeHistoryAlreadyExists() {
         var userId = UUID.randomUUID();
         var postId = UUID.randomUUID();
-        when(userRepository.findByIdAndDeletedAtIsNull(userId)).thenReturn(Optional.of(new UserEntity()));
-        when(postRepository.findByIdAndDeletedAtIsNull(postId)).thenReturn(Optional.of(new PostEntity()));
         when(likeRepository.findByUser_IdAndPost_Id(userId, postId))
                 .thenReturn(Optional.of(new LikeEntity()));
 

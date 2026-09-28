@@ -35,7 +35,7 @@ class UpdateLikeUseCaseTest {
 
         var response = updateLikeUseCase.execute(postId, userId);
 
-        assertThat(response.message()).isEqualTo("Like updated successfully for post");
+        assertThat(response.message()).isEqualTo("Like ativado com sucesso para o post");
         assertThat(like.getDeletedAt()).isNull();
     }
 
