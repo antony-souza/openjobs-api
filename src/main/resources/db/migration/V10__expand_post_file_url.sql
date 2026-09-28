@@ -1,0 +1,2 @@
+ALTER TABLE posts
+    ALTER COLUMN file_url TYPE TEXT;
