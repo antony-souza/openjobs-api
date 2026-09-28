@@ -35,10 +35,17 @@ O código é organizado por domínio. Cada módulo reúne controller, entidade, 
 ```mermaid
 flowchart LR
     Client[Cliente] -->|HTTP / JSON| Security[Spring Security + JWT]
-    Security --> Controller[Controllers]
+    Security --> AuthenticatedUser[Usuário autenticado<br/>userId + roleId]
+    AuthenticatedUser --> Authorization[RBAC<br/>@RequiresPermission]
+    Authorization -->|permitido| Controller[Controllers]
+    Authorization -->|negado| Forbidden[403 Forbidden]
     Controller --> UseCase[Use cases]
     UseCase --> Repository[Spring Data JPA]
     Repository --> PostgreSQL[(PostgreSQL)]
+    Authorization -. "consulta roleId + código" .-> RolePermission[(role_permissions)]
+    RolePermission -. "vincula" .-> Role[(roles)]
+    RolePermission -. "concede" .-> Permission[(permissions)]
+    RolePermission --> PostgreSQL
     UseCase -->|Publica eventos| RabbitMQ[RabbitMQ]
     RabbitMQ --> Consumer[Consumers]
     Consumer --> Email[Serviço de e-mail]
@@ -63,7 +70,7 @@ src/main/java/com/antony/openjobs/
 
 ## Modelo de dados
 
-As migrations do Flyway criam as tabelas `users`, `roles`, `permissions`, `role_permissions`, `jobs` e `applications`.
+As migrations do Flyway criam as tabelas `users`, `roles`, `permissions`, `role_permissions`, `jobs`, `applications`, `posts`, `likes` e `comments`.
 
 ```mermaid
 erDiagram
@@ -125,7 +132,7 @@ public ResponseEntity<?> create(...) {
 }
 ```
 
-O Spring intercepta métodos com `@RequiresPermission` antes de executá-los. O verificador lê o código da constante (`JOB_CREATE`, no exemplo) e consulta `role_permissions` para saber se a role do token está vinculada a uma permissão ativa com esse código. Sem o vínculo, a API responde `403 Forbidden` com a mensagem `Você não tem permissão para esta ação`.
+O fluxo usa RBAC (*Role-Based Access Control*): o usuário autenticado possui uma role, e a role possui permissões por meio da tabela `role_permissions`. O Spring intercepta métodos com `@RequiresPermission` antes de executá-los. O verificador lê o código da constante (`JOB_CREATE`, no exemplo), usa o `roleId` do JWT e consulta `role_permissions` com `permissions` para confirmar se existe um vínculo ativo. Sem o vínculo, a API responde `403 Forbidden` com a mensagem `Você não tem permissão para esta ação`.
 
 `@RequiresPermission` está aplicada às operações existentes de `/v1/users`, `/v1/roles`, `/v1/jobs`, `/v1/applications`, `/v1/permissions` e `/v1/role-permissions`, com o código correspondente a cada método HTTP. As rotas públicas de login e cadastro em `/v1/auth` não exigem permissão.
 
