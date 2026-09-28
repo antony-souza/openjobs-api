@@ -4,7 +4,7 @@ import com.antony.openjobs.common.api.ApiResponse;
 import com.antony.openjobs.common.pagination.IPaginationResponse;
 import com.antony.openjobs.config.security.RequiresPermission;
 import com.antony.openjobs.modules.permissions.model.Permission;
-import com.antony.openjobs.modules.users.repository.UserRepository;
+import com.antony.openjobs.modules.users.repository.IUserRepository;
 import com.antony.openjobs.modules.users.usecase.delete.DeleteUserResponse;
 import com.antony.openjobs.modules.users.usecase.delete.DeleteUserUseCase;
 import com.antony.openjobs.modules.users.usecase.findall.FindAllUsersProjection;
@@ -27,7 +27,7 @@ import java.util.UUID;
 public class UserController {
     private final UpdateUserUseCase updateUserUseCase;
     private final DeleteUserUseCase deleteUserUseCase;
-    private final UserRepository userRepository;
+    private final IUserRepository userRepository;
     private final PaginationService paginationService;
 
     @RequiresPermission(Permission.USER_READ)

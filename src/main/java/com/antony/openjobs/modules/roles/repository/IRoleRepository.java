@@ -8,7 +8,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface RoleRepository extends IBaseRepository<RoleEntity, UUID> {
+public interface IRoleRepository extends IBaseRepository<RoleEntity, UUID> {
     Optional<RoleEntity> findByCode(String code);
 
     Optional<RoleEntity> findByIdAndDeletedAtIsNull(UUID id);

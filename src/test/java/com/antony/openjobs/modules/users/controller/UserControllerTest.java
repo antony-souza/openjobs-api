@@ -1,7 +1,7 @@
 package com.antony.openjobs.modules.users.controller;
 
 import com.antony.openjobs.common.pagination.IPaginationResponse;
-import com.antony.openjobs.modules.users.repository.UserRepository;
+import com.antony.openjobs.modules.users.repository.IUserRepository;
 import com.antony.openjobs.modules.users.usecase.delete.DeleteUserUseCase;
 import com.antony.openjobs.modules.users.usecase.findall.FindAllUsersProjection;
 import com.antony.openjobs.modules.users.usecase.update.UpdateUserUseCase;
@@ -23,7 +23,7 @@ class UserControllerTest {
 
     @Test
     void shouldReturnPagedUsersInASuccessfulApiResponse() {
-        UserRepository userRepository = mock(UserRepository.class);
+        IUserRepository userRepository = mock(IUserRepository.class);
         PaginationService paginationService = mock(PaginationService.class);
         UserController controller = new UserController(
                 mock(UpdateUserUseCase.class),

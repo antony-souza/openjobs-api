@@ -1,7 +1,7 @@
 package com.antony.openjobs.modules.roles.usecase.update;
 
 import com.antony.openjobs.modules.roles.model.RoleEntity;
-import com.antony.openjobs.modules.roles.repository.RoleRepository;
+import com.antony.openjobs.modules.roles.repository.IRoleRepository;
 import com.antony.openjobs.modules.roles.services.RoleValidationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -13,7 +13,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class UpdateRoleUseCase {
-    private final RoleRepository roleRepository;
+    private final IRoleRepository roleRepository;
     private final RoleValidationService roleValidationService;
 
     public UpdateRoleResponse execute(UUID roleId, UpdateRoleRequest updateRoleRequest) {

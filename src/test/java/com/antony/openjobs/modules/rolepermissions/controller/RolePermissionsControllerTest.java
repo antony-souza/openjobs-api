@@ -1,6 +1,6 @@
 package com.antony.openjobs.modules.rolepermissions.controller;
 
-import com.antony.openjobs.modules.rolepermissions.repository.RolePermissionRepository;
+import com.antony.openjobs.modules.rolepermissions.repository.IRolePermissionRepository;
 import com.antony.openjobs.modules.rolepermissions.usecase.create.CreateRolePermissionRequest;
 import com.antony.openjobs.modules.rolepermissions.usecase.create.CreateRolePermissionResponse;
 import com.antony.openjobs.modules.rolepermissions.usecase.create.CreateRolePermissionUseCase;
@@ -27,7 +27,7 @@ class RolePermissionsControllerTest {
     void bindsJsonToTheCreateRolePermissionRequest() throws Exception {
         var useCase = mock(CreateRolePermissionUseCase.class);
         var controller = new RolePermissionsController(
-                useCase, mock(RolePermissionRepository.class), mock(PaginationService.class)
+                useCase, mock(IRolePermissionRepository.class), mock(PaginationService.class)
         );
         var mvc = MockMvcBuilders.standaloneSetup(controller)
                 .setControllerAdvice(new GlobalExceptionHandler())
@@ -54,7 +54,7 @@ class RolePermissionsControllerTest {
     void rejectsMissingPermissionIdBeforeCreating() throws Exception {
         var useCase = mock(CreateRolePermissionUseCase.class);
         var controller = new RolePermissionsController(
-                useCase, mock(RolePermissionRepository.class), mock(PaginationService.class)
+                useCase, mock(IRolePermissionRepository.class), mock(PaginationService.class)
         );
         var mvc = MockMvcBuilders.standaloneSetup(controller)
                 .setControllerAdvice(new GlobalExceptionHandler())

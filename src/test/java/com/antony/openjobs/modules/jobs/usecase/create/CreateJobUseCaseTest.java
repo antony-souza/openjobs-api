@@ -3,7 +3,7 @@ package com.antony.openjobs.modules.jobs.usecase.create;
 import com.antony.openjobs.modules.jobs.model.JobEntity;
 import com.antony.openjobs.modules.jobs.repository.JobRepository;
 import com.antony.openjobs.modules.users.model.UserEntity;
-import com.antony.openjobs.modules.users.repository.UserRepository;
+import com.antony.openjobs.modules.users.repository.IUserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -30,7 +30,7 @@ class CreateJobUseCaseTest {
     private JobRepository jobRepository;
 
     @Mock
-    private UserRepository userRepository;
+    private IUserRepository userRepository;
 
     @InjectMocks
     private CreateJobUseCase createJobUseCase;

@@ -12,7 +12,7 @@ import com.antony.openjobs.common.api.ApiResponse;
 import com.antony.openjobs.common.pagination.IPaginationResponse;
 import com.antony.openjobs.config.security.RequiresPermission;
 import com.antony.openjobs.modules.permissions.model.Permission;
-import com.antony.openjobs.modules.rolepermissions.repository.RolePermissionRepository;
+import com.antony.openjobs.modules.rolepermissions.repository.IRolePermissionRepository;
 import com.antony.openjobs.modules.rolepermissions.usecase.create.CreateRolePermissionRequest;
 import com.antony.openjobs.modules.rolepermissions.usecase.create.CreateRolePermissionResponse;
 import com.antony.openjobs.modules.rolepermissions.usecase.create.CreateRolePermissionUseCase;
@@ -27,7 +27,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class RolePermissionsController {
     private final CreateRolePermissionUseCase createRolePermissionUseCase;
-    private final RolePermissionRepository rolePermissionRepository;
+    private final IRolePermissionRepository rolePermissionRepository;
     private final PaginationService paginationService;
 
     @RequiresPermission(Permission.ROLEPERMISSION_READ)

@@ -1,7 +1,7 @@
 package com.antony.openjobs.modules.roles.controller;
 
 import com.antony.openjobs.common.pagination.IPaginationResponse;
-import com.antony.openjobs.modules.roles.repository.RoleRepository;
+import com.antony.openjobs.modules.roles.repository.IRoleRepository;
 import com.antony.openjobs.modules.roles.usecase.create.CreateRoleRequest;
 import com.antony.openjobs.modules.roles.usecase.create.CreateRoleResponse;
 import com.antony.openjobs.modules.roles.usecase.create.CreateRoleUseCase;
@@ -25,7 +25,7 @@ class RoleControllerTest {
 
     @Test
     void shouldReturnPagedRolesInASuccessfulApiResponse() {
-        RoleRepository roleRepository = mock(RoleRepository.class);
+        IRoleRepository roleRepository = mock(IRoleRepository.class);
         PaginationService paginationService = mock(PaginationService.class);
         RoleController controller = new RoleController(
                 roleRepository,
@@ -59,7 +59,7 @@ class RoleControllerTest {
         CreateRoleUseCase useCase = mock(CreateRoleUseCase.class);
         UpdateRoleUseCase updateRoleUseCase = mock(UpdateRoleUseCase.class);
         RoleController controller = new RoleController(
-                mock(RoleRepository.class),
+                mock(IRoleRepository.class),
                 mock(PaginationService.class),
                 useCase,
                 updateRoleUseCase

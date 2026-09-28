@@ -1,11 +1,11 @@
 package com.antony.openjobs.modules.rolepermissions.usecase.create;
 
 import com.antony.openjobs.modules.permissions.model.PermissionEntity;
-import com.antony.openjobs.modules.permissions.repository.PermissionRepository;
+import com.antony.openjobs.modules.permissions.repository.IPermissionRepository;
 import com.antony.openjobs.modules.rolepermissions.model.RolePermissionEntity;
-import com.antony.openjobs.modules.rolepermissions.repository.RolePermissionRepository;
+import com.antony.openjobs.modules.rolepermissions.repository.IRolePermissionRepository;
 import com.antony.openjobs.modules.roles.model.RoleEntity;
-import com.antony.openjobs.modules.roles.repository.RoleRepository;
+import com.antony.openjobs.modules.roles.repository.IRoleRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -30,13 +30,13 @@ import static org.mockito.Mockito.when;
 class CreateRolePermissionUseCaseTest {
 
     @Mock
-    private RolePermissionRepository rolePermissionRepository;
+    private IRolePermissionRepository rolePermissionRepository;
 
     @Mock
-    private RoleRepository roleRepository;
+    private IRoleRepository roleRepository;
 
     @Mock
-    private PermissionRepository permissionRepository;
+    private IPermissionRepository permissionRepository;
 
     @InjectMocks
     private CreateRolePermissionUseCase useCase;

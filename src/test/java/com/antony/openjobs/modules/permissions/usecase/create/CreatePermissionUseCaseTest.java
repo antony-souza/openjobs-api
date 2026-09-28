@@ -1,7 +1,7 @@
 package com.antony.openjobs.modules.permissions.usecase.create;
 
 import com.antony.openjobs.modules.permissions.model.PermissionEntity;
-import com.antony.openjobs.modules.permissions.repository.PermissionRepository;
+import com.antony.openjobs.modules.permissions.repository.IPermissionRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -22,7 +22,7 @@ import static org.mockito.Mockito.when;
 class CreatePermissionUseCaseTest {
 
     @Mock
-    private PermissionRepository permissionRepository;
+    private IPermissionRepository permissionRepository;
 
     @InjectMocks
     private CreatePermissionUseCase useCase;

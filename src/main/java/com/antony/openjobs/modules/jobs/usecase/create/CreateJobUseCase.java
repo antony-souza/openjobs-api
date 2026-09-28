@@ -3,7 +3,7 @@ package com.antony.openjobs.modules.jobs.usecase.create;
 import com.antony.openjobs.modules.jobs.model.JobEntity;
 import com.antony.openjobs.modules.jobs.repository.JobRepository;
 import com.antony.openjobs.modules.users.model.UserEntity;
-import com.antony.openjobs.modules.users.repository.UserRepository;
+import com.antony.openjobs.modules.users.repository.IUserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -15,7 +15,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class CreateJobUseCase {
     private final JobRepository jobRepository;
-    private final UserRepository userRepository;
+    private final IUserRepository userRepository;
 
     public CreateJobResponse execute(CreateJobRequest request, UUID publishedById) {
         if (jobRepository.existsByTitleAndPublishedBy_IdAndDeletedAtIsNull(request.title(), publishedById)) {

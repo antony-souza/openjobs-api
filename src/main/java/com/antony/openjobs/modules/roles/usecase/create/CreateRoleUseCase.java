@@ -1,7 +1,7 @@
 package com.antony.openjobs.modules.roles.usecase.create;
 
 import com.antony.openjobs.modules.roles.model.RoleEntity;
-import com.antony.openjobs.modules.roles.repository.RoleRepository;
+import com.antony.openjobs.modules.roles.repository.IRoleRepository;
 import com.antony.openjobs.modules.roles.services.RoleValidationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class CreateRoleUseCase {
-    private final RoleRepository roleRepository;
+    private final IRoleRepository roleRepository;
     private final RoleValidationService roleValidationService;
 
     public CreateRoleResponse execute(CreateRoleRequest createRoleRequest) {

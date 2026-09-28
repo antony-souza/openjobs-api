@@ -1,9 +1,9 @@
 package com.antony.openjobs.config.scripts;
 
 import com.antony.openjobs.modules.roles.model.RoleEntity;
-import com.antony.openjobs.modules.roles.repository.RoleRepository;
+import com.antony.openjobs.modules.roles.repository.IRoleRepository;
 import com.antony.openjobs.modules.users.model.UserEntity;
-import com.antony.openjobs.modules.users.repository.UserRepository;
+import com.antony.openjobs.modules.users.repository.IUserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -20,8 +20,8 @@ public class DefaultUserSeed implements ApplicationRunner {
     private static final String ADMIN_USERNAME = "admin";
     private static final String ADMIN_PASSWORD = "password";
 
-    private final RoleRepository roleRepository;
-    private final UserRepository userRepository;
+    private final IRoleRepository roleRepository;
+    private final IUserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Override

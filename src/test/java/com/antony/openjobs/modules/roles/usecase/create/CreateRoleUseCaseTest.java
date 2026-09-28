@@ -1,7 +1,7 @@
 package com.antony.openjobs.modules.roles.usecase.create;
 
 import com.antony.openjobs.modules.roles.model.RoleEntity;
-import com.antony.openjobs.modules.roles.repository.RoleRepository;
+import com.antony.openjobs.modules.roles.repository.IRoleRepository;
 import com.antony.openjobs.modules.roles.services.RoleValidationService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,7 +23,7 @@ import static org.mockito.Mockito.verify;
 class CreateRoleUseCaseTest {
 
     @Mock
-    private RoleRepository roleRepository;
+    private IRoleRepository roleRepository;
 
     @Mock
     private RoleValidationService roleValidationService;

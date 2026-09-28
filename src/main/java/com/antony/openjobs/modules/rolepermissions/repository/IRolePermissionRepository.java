@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.UUID;
 
 @Repository
-public interface RolePermissionRepository extends IBaseRepository<RolePermissionEntity, UUID> {
+public interface IRolePermissionRepository extends IBaseRepository<RolePermissionEntity, UUID> {
     @Transactional(readOnly = true)
     boolean existsByRole_IdAndPermission_CodeAndDeletedAtIsNullAndRole_DeletedAtIsNullAndPermission_DeletedAtIsNull(
             UUID roleId,

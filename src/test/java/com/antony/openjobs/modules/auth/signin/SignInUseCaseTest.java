@@ -3,7 +3,7 @@ package com.antony.openjobs.modules.auth.signin;
 import com.antony.openjobs.config.security.TokenProvider;
 import com.antony.openjobs.modules.roles.model.RoleEntity;
 import com.antony.openjobs.modules.users.model.UserEntity;
-import com.antony.openjobs.modules.users.repository.UserRepository;
+import com.antony.openjobs.modules.users.repository.IUserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -28,7 +28,7 @@ import static org.mockito.Mockito.when;
 class SignInUseCaseTest {
 
     @Mock
-    private UserRepository userRepository;
+    private IUserRepository userRepository;
 
     @Mock
     private PasswordEncoder passwordEncoder;

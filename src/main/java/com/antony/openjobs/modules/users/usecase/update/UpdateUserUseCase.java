@@ -1,9 +1,9 @@
 package com.antony.openjobs.modules.users.usecase.update;
 
 import com.antony.openjobs.modules.roles.model.RoleEntity;
-import com.antony.openjobs.modules.roles.repository.RoleRepository;
+import com.antony.openjobs.modules.roles.repository.IRoleRepository;
 import com.antony.openjobs.modules.users.model.UserEntity;
-import com.antony.openjobs.modules.users.repository.UserRepository;
+import com.antony.openjobs.modules.users.repository.IUserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -15,8 +15,8 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class UpdateUserUseCase {
-    private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
+    private final IUserRepository userRepository;
+    private final IRoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
 
     public UpdateUserResponse execute(UUID userId, UpdateUserRequest updateUserRequest) {

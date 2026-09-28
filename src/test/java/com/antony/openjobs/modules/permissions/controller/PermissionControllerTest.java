@@ -1,6 +1,6 @@
 package com.antony.openjobs.modules.permissions.controller;
 
-import com.antony.openjobs.modules.permissions.repository.PermissionRepository;
+import com.antony.openjobs.modules.permissions.repository.IPermissionRepository;
 import com.antony.openjobs.modules.permissions.usecase.create.CreatePermissionRequest;
 import com.antony.openjobs.modules.permissions.usecase.create.CreatePermissionResponse;
 import com.antony.openjobs.modules.permissions.usecase.create.CreatePermissionUseCase;
@@ -25,7 +25,7 @@ class PermissionControllerTest {
     void bindsJsonToTheCreatePermissionRequest() throws Exception {
         var useCase = mock(CreatePermissionUseCase.class);
         var controller = new PermissionController(
-                useCase, mock(PermissionRepository.class), mock(PaginationService.class)
+                useCase, mock(IPermissionRepository.class), mock(PaginationService.class)
         );
         var mvc = MockMvcBuilders.standaloneSetup(controller)
                 .setControllerAdvice(new GlobalExceptionHandler())
@@ -51,7 +51,7 @@ class PermissionControllerTest {
     void rejectsMissingPermissionFieldsBeforeCreating() throws Exception {
         var useCase = mock(CreatePermissionUseCase.class);
         var controller = new PermissionController(
-                useCase, mock(PermissionRepository.class), mock(PaginationService.class)
+                useCase, mock(IPermissionRepository.class), mock(PaginationService.class)
         );
         var mvc = MockMvcBuilders.standaloneSetup(controller)
                 .setControllerAdvice(new GlobalExceptionHandler())

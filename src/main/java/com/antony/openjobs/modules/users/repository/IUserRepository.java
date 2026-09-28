@@ -8,7 +8,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface UserRepository extends IBaseRepository<UserEntity, UUID> {
+public interface IUserRepository extends IBaseRepository<UserEntity, UUID> {
     Optional<UserEntity> findByEmail(String email);
 
     Optional<UserEntity> findByEmailAndDeletedAtIsNull(String email);

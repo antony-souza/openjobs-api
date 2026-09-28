@@ -4,7 +4,7 @@ import com.antony.openjobs.common.api.ApiResponse;
 import com.antony.openjobs.common.pagination.IPaginationResponse;
 import com.antony.openjobs.config.security.RequiresPermission;
 import com.antony.openjobs.modules.permissions.model.Permission;
-import com.antony.openjobs.modules.roles.repository.RoleRepository;
+import com.antony.openjobs.modules.roles.repository.IRoleRepository;
 import com.antony.openjobs.modules.roles.usecase.create.CreateRoleRequest;
 import com.antony.openjobs.modules.roles.usecase.create.CreateRoleResponse;
 import com.antony.openjobs.modules.roles.usecase.create.CreateRoleUseCase;
@@ -26,7 +26,7 @@ import java.util.UUID;
 @RequestMapping("/v1/roles")
 @RequiredArgsConstructor
 public class RoleController {
-    private final RoleRepository roleRepository;
+    private final IRoleRepository roleRepository;
     private final PaginationService paginationService;
     private final CreateRoleUseCase createRoleUseCase;
     private final UpdateRoleUseCase updateRoleUseCase;

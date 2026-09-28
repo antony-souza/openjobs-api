@@ -7,14 +7,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.antony.openjobs.modules.permissions.repository.PermissionRepository;
+import com.antony.openjobs.modules.permissions.repository.IPermissionRepository;
 
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 public class UpdatePermissionUseCase {
-    private final PermissionRepository permissionRepository;
+    private final IPermissionRepository permissionRepository;
 
     @Transactional
     public UpdatePermissionResponse execute(UUID id, UpdatePermissionRequest request) {

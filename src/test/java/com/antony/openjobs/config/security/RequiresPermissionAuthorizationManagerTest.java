@@ -1,7 +1,7 @@
 package com.antony.openjobs.config.security;
 
 import com.antony.openjobs.modules.permissions.model.Permission;
-import com.antony.openjobs.modules.rolepermissions.repository.RolePermissionRepository;
+import com.antony.openjobs.modules.rolepermissions.repository.IRolePermissionRepository;
 import org.aopalliance.intercept.MethodInvocation;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,7 +19,7 @@ class RequiresPermissionAuthorizationManagerTest {
 
     @Test
     void authorizesWhenTokenRoleHasTheAnnotatedPermission() throws Exception {
-        var repository = mock(RolePermissionRepository.class);
+        var repository = mock(IRolePermissionRepository.class);
         var manager = new RequiresPermissionAuthorizationManager(repository);
         UUID roleId = UUID.randomUUID();
         var authentication = authenticationFor(roleId);
@@ -39,7 +39,7 @@ class RequiresPermissionAuthorizationManagerTest {
 
     @Test
     void deniesWhenTokenRoleHasNoGrant() throws Exception {
-        var repository = mock(RolePermissionRepository.class);
+        var repository = mock(IRolePermissionRepository.class);
         var manager = new RequiresPermissionAuthorizationManager(repository);
         UUID roleId = UUID.randomUUID();
 
@@ -54,7 +54,7 @@ class RequiresPermissionAuthorizationManagerTest {
 
     @Test
     void deniesAPrincipalWithoutAuthenticatedUser() {
-        var repository = mock(RolePermissionRepository.class);
+        var repository = mock(IRolePermissionRepository.class);
         var manager = new RequiresPermissionAuthorizationManager(repository);
         var authentication = new UsernamePasswordAuthenticationToken("other-principal", null, List.of());
 

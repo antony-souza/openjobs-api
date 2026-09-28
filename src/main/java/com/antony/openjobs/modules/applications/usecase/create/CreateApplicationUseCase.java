@@ -13,7 +13,7 @@ import com.antony.openjobs.modules.applications.repository.ApplicationRepository
 import com.antony.openjobs.modules.jobs.model.JobEntity;
 import com.antony.openjobs.modules.jobs.repository.JobRepository;
 import com.antony.openjobs.modules.users.model.UserEntity;
-import com.antony.openjobs.modules.users.repository.UserRepository;
+import com.antony.openjobs.modules.users.repository.IUserRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 public class CreateApplicationUseCase {
     private final ApplicationRepository applicationRepository;
     private final JobRepository jobRepository;
-    private final UserRepository userRepository;
+    private final IUserRepository userRepository;
 
     public CreateApplicationResponse execute(UUID candidateId, CreateApplicationRequest request) {
         if (applicationRepository.existsByCandidateIdAndJobIdAndDeletedAtIsNull(candidateId,

@@ -1,6 +1,6 @@
 package com.antony.openjobs.modules.roles.services;
 
-import com.antony.openjobs.modules.roles.repository.RoleRepository;
+import com.antony.openjobs.modules.roles.repository.IRoleRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -20,7 +20,7 @@ import static org.mockito.Mockito.when;
 class RoleValidationServiceTest {
 
     @Mock
-    private RoleRepository roleRepository;
+    private IRoleRepository roleRepository;
 
     @InjectMocks
     private RoleValidationService roleValidationService;

@@ -1,7 +1,7 @@
 package com.antony.openjobs.modules.users.usecase.delete;
 
 import com.antony.openjobs.modules.users.model.UserEntity;
-import com.antony.openjobs.modules.users.repository.UserRepository;
+import com.antony.openjobs.modules.users.repository.IUserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -12,7 +12,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class DeleteUserUseCase {
-    private final UserRepository userRepository;
+    private final IUserRepository userRepository;
 
     @Transactional
     public DeleteUserResponse execute(UUID userId) {

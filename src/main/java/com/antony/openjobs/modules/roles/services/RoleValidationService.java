@@ -1,6 +1,6 @@
 package com.antony.openjobs.modules.roles.services;
 
-import com.antony.openjobs.modules.roles.repository.RoleRepository;
+import com.antony.openjobs.modules.roles.repository.IRoleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -11,7 +11,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class RoleValidationService {
-    private final RoleRepository roleRepository;
+    private final IRoleRepository roleRepository;
 
     public void validateDuplicateRole(String code, UUID roleId) {
         boolean roleExists = roleId == null

@@ -1,6 +1,6 @@
 package com.antony.openjobs.config.security;
 
-import com.antony.openjobs.modules.rolepermissions.repository.RolePermissionRepository;
+import com.antony.openjobs.modules.rolepermissions.repository.IRolePermissionRepository;
 import lombok.RequiredArgsConstructor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.springframework.security.authorization.AuthorizationDecision;
@@ -14,7 +14,7 @@ import java.util.function.Supplier;
 @RequiredArgsConstructor
 public class RequiresPermissionAuthorizationManager implements AuthorizationManager<MethodInvocation> {
 
-    private final RolePermissionRepository rolePermissionRepository;
+    private final IRolePermissionRepository rolePermissionRepository;
 
     @Override
     public AuthorizationDecision authorize(

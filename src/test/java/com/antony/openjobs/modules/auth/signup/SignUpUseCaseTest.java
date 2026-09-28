@@ -2,10 +2,10 @@ package com.antony.openjobs.modules.auth.signup;
 
 import com.antony.openjobs.config.security.TokenProvider;
 import com.antony.openjobs.modules.roles.model.RoleEntity;
-import com.antony.openjobs.modules.roles.repository.RoleRepository;
+import com.antony.openjobs.modules.roles.repository.IRoleRepository;
 import com.antony.openjobs.services.queue.QueueService;
 import com.antony.openjobs.modules.users.model.UserEntity;
-import com.antony.openjobs.modules.users.repository.UserRepository;
+import com.antony.openjobs.modules.users.repository.IUserRepository;
 import com.antony.openjobs.services.email.EmailMessage;
 import com.antony.openjobs.utils.QueueNameUtils;
 import org.junit.jupiter.api.Test;
@@ -33,10 +33,10 @@ import static org.mockito.Mockito.when;
 class SignUpUseCaseTest {
 
     @Mock
-    private UserRepository userRepository;
+    private IUserRepository userRepository;
 
     @Mock
-    private RoleRepository roleRepository;
+    private IRoleRepository roleRepository;
 
     @Mock
     private org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
