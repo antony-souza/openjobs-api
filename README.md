@@ -205,6 +205,19 @@ No Linux ou macOS:
 
 As migrations são executadas automaticamente na inicialização.
 
+## Upload de arquivos em posts
+
+Configure no `.env` as credenciais da API S3 do Cloudflare R2 e a URL pública do bucket. A URL pública pode ser um domínio personalizado ou o domínio público configurado no R2.
+
+Para criar um post com arquivo, envie uma requisição autenticada `POST /v1/posts` como `multipart/form-data`:
+
+| Campo | Tipo | Obrigatório | Descrição |
+| --- | --- | --- | --- |
+| `content` | texto | Sim | Conteúdo do post, com até 1.000 caracteres. |
+| `file` | arquivo | Não | Arquivo enviado ao R2, com até 10 MB. |
+
+O arquivo é salvo em `posts/<uuid>.<extensão>`. A resposta da API contém o `id` do post e a `fileUrl` pública, que também é gravada em `posts.file_url`.
+
 ## Documentação da API
 
 Com a aplicação em execução, abra o Swagger UI:

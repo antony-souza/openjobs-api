@@ -10,6 +10,11 @@ spring:
       pageable:
         default-page-size: 10
 
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
   datasource:
     url: jdbc:postgresql://localhost:${POSTGRES_PORT:5432}/${POSTGRES_DB:openjobs}
     username: ${POSTGRES_USER:openjobs}
@@ -44,8 +49,15 @@ spring:
           auth: true
           starttls:
             enable: true
-
 jwt:
   expiration: ${JWT_EXPIRATION:9000000}
   # fallback for dev
   key: ${JWT_KEY:MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY=}
+
+cloudflare:
+  r2:
+    account-id: ${R2_ACCOUNT_ID}
+    access-key-id: ${R2_ACCESS_KEY_ID}
+    secret-access-key: ${R2_SECRET_ACCESS_KEY}
+    bucket-name: ${R2_BUCKET_NAME}
+    public-url: ${R2_PUBLIC_URL}
