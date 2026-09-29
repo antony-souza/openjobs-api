@@ -46,13 +46,13 @@ services:
       - ./docker/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
 
     mem_limit: 512m
-    cpus: 0.50
+    cpus: 1.0
 
     healthcheck:
       test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
       start_period: 120s
       interval: 10s
-      timeout: 5s
+      timeout: 30s
       retries: 12
 
     networks:
@@ -68,7 +68,7 @@ services:
       postgres:
         condition: service_healthy
       rabbitmq:
-        condition: service_healthy
+        condition: service_started
 
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-openjobs}
