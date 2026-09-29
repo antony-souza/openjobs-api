@@ -43,15 +43,17 @@ services:
 
     volumes:
       - openjobs_rabbitmq_data:/var/lib/rabbitmq
+      - ./docker/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
 
     mem_limit: 512m
     cpus: 0.50
 
     healthcheck:
       test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      start_period: 120s
       interval: 10s
       timeout: 5s
-      retries: 10
+      retries: 12
 
     networks:
       - openjobs
