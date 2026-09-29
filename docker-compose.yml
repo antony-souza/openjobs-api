@@ -12,7 +12,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-openjobs_dev_password}
 
     ports:
-      - "${POSTGRES_PORT:-5432}:5432"
+      - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"
 
     volumes:
       - openjobs_postgres_data:/var/lib/postgresql/data
@@ -30,7 +30,7 @@ services:
       - openjobs
 
   rabbitmq:
-    image: rabbitmq:4.3.4-management-alpine
+    image: rabbitmq:4.3.4-alpine
     container_name: openjobs-rabbitmq
     restart: unless-stopped
 
@@ -39,8 +39,7 @@ services:
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:-openjobs_dev_password}
 
     ports:
-      - "${RABBITMQ_PORT:-5672}:5672"
-      - "${RABBITMQ_MANAGEMENT_PORT:-15672}:15672"
+      - "127.0.0.1:${RABBITMQ_PORT:-5672}:5672"
 
     volumes:
       - openjobs_rabbitmq_data:/var/lib/rabbitmq
@@ -57,35 +56,44 @@ services:
     networks:
       - openjobs
 
-  redis:
-    image: redis:8.8.1-alpine
-    container_name: openjobs-redis
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: openjobs-api
     restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
 
     environment:
-      REDIS_PASSWORD: ${REDIS_PASSWORD:-openjobs_dev_password}
-
-    command:
-      - redis-server
-      - --appendonly
-      - "yes"
-      - --requirepass
-      - ${REDIS_PASSWORD:-openjobs_dev_password}
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-openjobs}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-openjobs}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-openjobs_dev_password}
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: "5672"
+      SPRING_RABBITMQ_USERNAME: ${RABBITMQ_USER:-openjobs}
+      SPRING_RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD:-openjobs_dev_password}
+      MAIL_HOST: ${MAIL_HOST:-smtp.gmail.com}
+      MAIL_PORT: ${MAIL_PORT:-587}
+      MAIL_USERNAME: ${MAIL_USERNAME:-}
+      MAIL_PASSWORD: ${MAIL_PASSWORD:-}
+      JWT_EXPIRATION: ${JWT_EXPIRATION:-86400000}
+      JWT_KEY: ${JWT_KEY:-MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY=}
+      R2_ENABLED: ${R2_ENABLED:-false}
+      R2_ACCOUNT_ID: ${R2_ACCOUNT_ID:-}
+      R2_ACCESS_KEY_ID: ${R2_ACCESS_KEY_ID:-}
+      R2_SECRET_ACCESS_KEY: ${R2_SECRET_ACCESS_KEY:-}
+      R2_BUCKET_NAME: ${R2_BUCKET_NAME:-}
+      R2_PUBLIC_URL: ${R2_PUBLIC_URL:-}
 
     ports:
-      - "${REDIS_PORT:-6379}:6379"
+      - "${API_PORT:-8080}:8080"
 
-    volumes:
-      - openjobs_redis_data:/data
-
-    mem_limit: 256m
-    cpus: 0.25
-
-    healthcheck:
-      test: ["CMD-SHELL", "redis-cli -a \"$${REDIS_PASSWORD}\" ping | grep -q PONG"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+    mem_limit: 768m
+    cpus: 1.0
 
     networks:
       - openjobs
@@ -93,7 +101,6 @@ services:
 volumes:
   openjobs_postgres_data:
   openjobs_rabbitmq_data:
-  openjobs_redis_data:
 
 networks:
   openjobs:

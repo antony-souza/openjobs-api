@@ -24,7 +24,6 @@ Atualmente, a API possui fundamentos para:
 - Spring Security e JSON Web Token (JWT)
 - PostgreSQL e Flyway
 - RabbitMQ e Spring AMQP
-- Redis para o ambiente local
 - Jakarta Validation, Lombok e SpringDoc OpenAPI
 - Maven, Docker Compose e GitHub Actions
 
@@ -181,15 +180,23 @@ Copy-Item .env.example .env
 
 Atualize as credenciais e chaves no `.env`. Nunca versione esse arquivo.
 
-### 2. Inicie as dependências
+### 2. Inicie a API e as dependências
 
 ```powershell
-docker compose up -d
+docker compose up -d --build
 ```
 
-O Compose disponibiliza PostgreSQL, RabbitMQ e Redis. O RabbitMQ Management fica disponível em `http://localhost:15672`.
+O Compose inicia a API, o PostgreSQL e o RabbitMQ. A API fica disponível em `http://localhost:8080`; as migrations são executadas automaticamente. Os dados do PostgreSQL e do RabbitMQ ficam em volumes Docker. Somente a API é publicada para acesso externo; PostgreSQL e RabbitMQ ficam acessíveis pelo host local e pela rede interna do Compose.
 
-### 3. Inicie a API
+Para acompanhar os logs:
+
+```powershell
+docker compose logs -f api
+```
+
+Para executar a API fora do Docker durante o desenvolvimento, inicie as dependências com `docker compose up -d postgres rabbitmq` e depois use:
+
+### 3. Inicie a API localmente
 
 No Windows:
 
