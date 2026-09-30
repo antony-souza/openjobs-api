@@ -45,7 +45,6 @@ services:
       rabbitmq:
         condition: service_started
 
-    # O endpoint direto do Supabase usa IPv6; a rede bridge desta máquina não tem rota IPv6.
     network_mode: host
 
     environment:
