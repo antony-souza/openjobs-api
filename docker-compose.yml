@@ -1,34 +1,6 @@
 name: openjobs
 
 services:
-  postgres:
-    image: postgres:17.10-alpine
-    container_name: openjobs-postgres
-    restart: unless-stopped
-
-    environment:
-      POSTGRES_DB: ${POSTGRES_DB:-openjobs}
-      POSTGRES_USER: ${POSTGRES_USER:-openjobs}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-openjobs_dev_password}
-
-    ports:
-      - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"
-
-    volumes:
-      - openjobs_postgres_data:/var/lib/postgresql/data
-
-    mem_limit: 512m
-    cpus: 0.50
-
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-    networks:
-      - openjobs
-
   rabbitmq:
     image: rabbitmq:4.3.4-alpine
     container_name: openjobs-rabbitmq
@@ -70,15 +42,13 @@ services:
     container_name: openjobs-api
     restart: unless-stopped
     depends_on:
-      postgres:
-        condition: service_healthy
       rabbitmq:
         condition: service_started
 
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-openjobs}
-      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-openjobs}
-      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-openjobs_dev_password}
+      SPRING_DATASOURCE_URL: jdbc:postgresql://${POSTGRES_HOST:?Configure POSTGRES_HOST no .env}:${POSTGRES_PORT:-5432}/${POSTGRES_DB:-postgres}?sslmode=${POSTGRES_SSLMODE:-require}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-postgres}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:?Configure POSTGRES_PASSWORD no .env}
       SPRING_RABBITMQ_HOST: rabbitmq
       SPRING_RABBITMQ_PORT: "5672"
       SPRING_RABBITMQ_USERNAME: ${RABBITMQ_USER:-openjobs}
@@ -106,7 +76,6 @@ services:
       - openjobs
 
 volumes:
-  openjobs_postgres_data:
   openjobs_rabbitmq_data:
 
 networks:

@@ -16,7 +16,7 @@ spring:
       max-request-size: 10MB
 
   datasource:
-    url: jdbc:postgresql://localhost:${POSTGRES_PORT:5432}/${POSTGRES_DB:openjobs}
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DB:openjobs}?sslmode=${POSTGRES_SSLMODE:disable}
     username: ${POSTGRES_USER:openjobs}
     password: ${POSTGRES_PASSWORD:openjobs_dev_password}
     driver-class-name: org.postgresql.Driver
