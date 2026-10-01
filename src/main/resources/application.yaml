@@ -64,6 +64,6 @@ cloudflare:
     public-url: ${R2_PUBLIC_URL:}
 
 server:
+  port: ${SERVER_PORT:8082}
   servlet:
-    port: ${API_PORT:8082}
     context-path: /api
