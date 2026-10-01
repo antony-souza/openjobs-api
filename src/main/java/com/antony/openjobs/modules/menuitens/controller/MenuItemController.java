@@ -4,6 +4,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -18,6 +19,7 @@ import com.antony.openjobs.modules.menuitens.usecase.findall.FindAllMenuItemsPro
 import com.antony.openjobs.modules.permissions.model.Permission;
 import com.antony.openjobs.services.pagination.PaginationService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -30,7 +32,8 @@ public class MenuItemController {
 
     @RequiresPermission(Permission.MENUITEM_CREATE)
     @PostMapping()
-    public ResponseEntity<ApiResponse<CreateMenuItemResponse>> create(CreateMenuItemRequest request) {
+    public ResponseEntity<ApiResponse<CreateMenuItemResponse>> create(
+            @Valid @RequestBody CreateMenuItemRequest request) {
         var response = createMenuItemUseCase.execute(request);
 
         return ResponseEntity.ok(ApiResponse.success(response));
