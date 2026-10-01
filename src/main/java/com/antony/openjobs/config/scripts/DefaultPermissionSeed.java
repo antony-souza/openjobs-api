@@ -13,7 +13,8 @@ import com.antony.openjobs.modules.permissions.repository.IPermissionRepository;
 
 import lombok.RequiredArgsConstructor;
 
-@Component
+// Para rodar o seed, descomente a anotação @Component e execute a aplicação.
+//@Component
 @RequiredArgsConstructor
 public class DefaultPermissionSeed implements ApplicationRunner {
     private static final Map<String, String> ACTION_NAMES = Map.of(

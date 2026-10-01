@@ -10,6 +10,8 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
+// Para rodar o seed, descomente a anotação @Component e execute a aplicação.
+//@Component
 @RequiredArgsConstructor
 public class DefaultUserSeed implements ApplicationRunner {
     private static final String ADMIN_ROLE_NAME = "Administrador";
