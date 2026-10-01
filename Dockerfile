@@ -17,6 +17,6 @@ RUN addgroup -S app && adduser -S app -G app
 COPY --from=build --chown=app:app /app/target/*.jar /app/app.jar
 
 USER app
-EXPOSE 8080
+EXPOSE 8082
 
 ENTRYPOINT ["java", "-XX:MaxRAMPercentage=70.0", "-XX:+UseSerialGC", "-jar", "/app/app.jar"]

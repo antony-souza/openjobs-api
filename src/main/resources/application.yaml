@@ -65,4 +65,5 @@ cloudflare:
 
 server:
   servlet:
+    port: ${API_PORT:8082}
     context-path: /api
