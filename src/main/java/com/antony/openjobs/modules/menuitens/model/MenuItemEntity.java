@@ -24,6 +24,6 @@ public class MenuItemEntity extends BaseEntity {
     @Column(name = "icon_name", nullable = false, length = 50)
     String iconName;
 
-    @Column(name = "path", nullable = false, length = 100)
+    @Column(name = "path", unique = true, nullable = false, length = 1010)
     String path;
 }
