@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class DefaultUserSeed implements ApplicationRunner {
     private static final String ADMIN_ROLE_NAME = "Administrador";
     private static final String ADMIN_ROLE_CODE = "admin";
-    private static final int ADMIN_ROLE_LEVEL = 100;
+    private static final int ADMIN_ROLE_LEVEL = 999;
     private static final String ADMIN_NAME = "Administrador";
     private static final String ADMIN_EMAIL = "admin@openjobs.com.br";
     private static final String ADMIN_USERNAME = "admin";

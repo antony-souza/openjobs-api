@@ -13,7 +13,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.antony.openjobs.common.api.ApiResponse;
 import com.antony.openjobs.config.security.AuthenticatedUser;
+import com.antony.openjobs.config.security.RequiresPermission;
 import com.antony.openjobs.common.pagination.IPaginationResponse;
+import com.antony.openjobs.modules.permissions.model.Permission;
 import com.antony.openjobs.modules.posts.usecase.create.CreatePostRequest;
 import com.antony.openjobs.modules.posts.usecase.create.CreatePostResponse;
 import com.antony.openjobs.modules.posts.usecase.create.CreatePostUseCase;
@@ -30,6 +32,7 @@ public class PostController {
     private final CreatePostUseCase createPostUseCase;
     private final FindAllPostsByUserIdUseCase findAllPostsByUserIdUseCase;
 
+    @RequiresPermission(Permission.POST_READ)
     @GetMapping
     public ResponseEntity<ApiResponse<IPaginationResponse<FindAllPostsByUserIdResponse>>> findAll(
             @AuthenticationPrincipal AuthenticatedUser loggedUser,
@@ -40,6 +43,7 @@ public class PostController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
+    @RequiresPermission(Permission.POST_CREATE)
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<CreatePostResponse>> create(
             @Valid @ModelAttribute CreatePostRequest request,

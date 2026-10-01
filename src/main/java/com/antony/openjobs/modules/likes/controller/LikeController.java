@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.antony.openjobs.common.api.ApiResponse;
 import com.antony.openjobs.config.security.AuthenticatedUser;
+import com.antony.openjobs.config.security.RequiresPermission;
+import com.antony.openjobs.modules.permissions.model.Permission;
 import com.antony.openjobs.modules.likes.usecase.LikeResponse;
 import com.antony.openjobs.modules.likes.usecase.create.CreateLikeUseCase;
 import com.antony.openjobs.modules.likes.usecase.update.UpdateLikeUseCase;
@@ -29,6 +31,7 @@ public class LikeController {
     private final UpdateLikeUseCase updateLikeUseCase;
     private final DeleteLikeUseCase deleteLikeUseCase;
 
+    @RequiresPermission(Permission.LIKE_CREATE)
     @PostMapping("/{postId}")
     public ResponseEntity<ApiResponse<LikeResponse>> create(
             @PathVariable UUID postId,
@@ -38,6 +41,7 @@ public class LikeController {
         return ResponseEntity.status(201).body(ApiResponse.success(response));
     }
 
+    @RequiresPermission(Permission.LIKE_UPDATE)
     @PutMapping("/{postId}")
     public ResponseEntity<ApiResponse<LikeResponse>> update(
             @PathVariable UUID postId,
@@ -47,6 +51,7 @@ public class LikeController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
+    @RequiresPermission(Permission.LIKE_DELETE)
     @DeleteMapping("/{postId}")
     public ResponseEntity<ApiResponse<LikeResponse>> delete(
             @PathVariable UUID postId,

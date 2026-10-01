@@ -10,6 +10,8 @@ import com.antony.openjobs.modules.permissions.model.PermissionEntity;
 
 @Repository
 public interface IPermissionRepository extends IBaseRepository<PermissionEntity, UUID> {
+    Optional<PermissionEntity> findByCode(String code);
+
     boolean existsByCodeAndDeletedAtIsNull(String code);
 
     Optional<PermissionEntity> findByCodeAndDeletedAtIsNull(String code);
