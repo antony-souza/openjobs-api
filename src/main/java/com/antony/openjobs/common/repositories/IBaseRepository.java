@@ -9,6 +9,7 @@ import org.springframework.data.repository.NoRepositoryBean;
 public interface IBaseRepository<TEntity, TID> extends JpaRepository<TEntity, TID> {
     <P> Page<P> findAllByDeletedAtIsNull(
             Pageable pageable,
-            Class<P> projection
-    );
+            Class<P> projection);
+
+    boolean existsByIdAndDeletedAtIsNull(TID id);
 }

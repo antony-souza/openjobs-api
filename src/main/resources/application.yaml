@@ -62,3 +62,7 @@ cloudflare:
     secret-access-key: ${R2_SECRET_ACCESS_KEY:}
     bucket-name: ${R2_BUCKET_NAME:}
     public-url: ${R2_PUBLIC_URL:}
+
+server:
+  servlet:
+    context-path: /api

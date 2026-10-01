@@ -1,10 +1,11 @@
 package com.antony.openjobs.config.scripts;
 
 import java.util.Map;
+import java.util.Objects;
 
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
-import org.springframework.stereotype.Component;
+import org.springframework.core.annotation.Order;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.antony.openjobs.modules.permissions.model.Permission;
@@ -13,9 +14,10 @@ import com.antony.openjobs.modules.permissions.repository.IPermissionRepository;
 
 import lombok.RequiredArgsConstructor;
 
-// Para rodar o seed, descomente a anotação @Component e execute a aplicação.
-//@Component
+// Para rodar a seed, descomente a anotação @Component e execute a aplicação.
+// @Component
 @RequiredArgsConstructor
+@Order(1)
 public class DefaultPermissionSeed implements ApplicationRunner {
     private static final Map<String, String> ACTION_NAMES = Map.of(
             "READ", "Consultar",
@@ -31,7 +33,9 @@ public class DefaultPermissionSeed implements ApplicationRunner {
             "POST", "publicações",
             "LIKE", "curtidas",
             "JOB", "vagas",
-            "APPLICATION", "candidaturas");
+            "APPLICATION", "candidaturas",
+            "MENUITEM", "itens de menu",
+            "MENUROLEITEM", "vínculos de itens de menu a perfis");
 
     private final IPermissionRepository permissionRepository;
 
@@ -43,8 +47,26 @@ public class DefaultPermissionSeed implements ApplicationRunner {
 
             if (existingPermission.isPresent()) {
                 PermissionEntity entity = existingPermission.get();
+                boolean changed = false;
+
                 if (entity.getDeletedAt() != null) {
                     entity.setDeletedAt(null);
+                    changed = true;
+                }
+
+                String name = createName(permission);
+                if (!Objects.equals(entity.getName(), name)) {
+                    entity.setName(name);
+                    changed = true;
+                }
+
+                String description = createDescription(permission);
+                if (!Objects.equals(entity.getDescription(), description)) {
+                    entity.setDescription(description);
+                    changed = true;
+                }
+
+                if (changed) {
                     permissionRepository.save(entity);
                 }
                 continue;
