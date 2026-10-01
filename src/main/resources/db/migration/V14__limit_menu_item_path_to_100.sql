@@ -1,0 +1,2 @@
+ALTER TABLE menu_items
+    ALTER COLUMN path TYPE VARCHAR(100);
