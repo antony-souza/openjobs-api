@@ -55,6 +55,7 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(auth -> auth
                         .dispatcherTypeMatchers(DispatcherType.ERROR, DispatcherType.FORWARD).permitAll()
                         .requestMatchers("/v1/auth/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/actuator/health", "/actuator/health/**").permitAll()
                         .requestMatchers(HttpMethod.GET,
                                 "/v1/profiles/**",
                                 "/v1/community/posts/*/comments",

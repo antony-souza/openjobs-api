@@ -235,6 +235,10 @@ http://localhost:8080/swagger-ui/index.html
 
 ## Testes e build
 
+Para publicar a API mantendo a instância anterior ativa até a nova estabilizar,
+use `bash deploy.sh`. A primeira instalação do proxy usa `bash deploy.sh --bootstrap`.
+Veja [o procedimento de deploy](docs/deploy.md) para portas, recuperação e migrations.
+
 Execute toda a suíte de testes:
 
 ```powershell

@@ -358,6 +358,17 @@ class CommunityIntegrationTest {
                 .isInstanceOfSatisfying(ResponseStatusException.class, error -> assertThat(error.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND));
     }
 
+    @Test
+    void exposesReadinessWithoutCredentialsOrDependencyDetails() throws Exception {
+        var mvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
+                .addFilters(springSecurityFilterChain).build();
+        mvc.perform(get("/actuator/health/readiness"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("UP"))
+                .andExpect(jsonPath("$.components").doesNotExist())
+                .andExpect(jsonPath("$.details").doesNotExist());
+    }
+
     private UserEntity user(String name) {
         var user = new UserEntity(); var suffix = UUID.randomUUID().toString().substring(0, 8);
         user.setName(name); user.setUsername("test" + suffix); user.setEmail("test-" + suffix + "@example.invalid");

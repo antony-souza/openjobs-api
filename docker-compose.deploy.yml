@@ -1,0 +1,25 @@
+# Use junto de docker-compose.yml; deploy.sh seleciona somente a instância inativa.
+services:
+  api-blue:
+    extends:
+      file: docker-compose.yml
+      service: api
+    container_name: openjobs-api-blue
+    image: ${OPENJOBS_DEPLOY_IMAGE:-openjobs-api:local}
+    environment:
+      SERVER_PORT: ${API_BLUE_PORT:-8083}
+      SERVER_ADDRESS: 127.0.0.1
+    stop_grace_period: 50s
+    profiles: [deploy]
+
+  api-green:
+    extends:
+      file: docker-compose.yml
+      service: api
+    container_name: openjobs-api-green
+    image: ${OPENJOBS_DEPLOY_IMAGE:-openjobs-api:local}
+    environment:
+      SERVER_PORT: ${API_GREEN_PORT:-8084}
+      SERVER_ADDRESS: 127.0.0.1
+    stop_grace_period: 50s
+    profiles: [deploy]
