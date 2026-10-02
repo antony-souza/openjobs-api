@@ -12,13 +12,14 @@ permissão de sudo para atualizar a configuração e recarregar o serviço.
    também banco e RabbitMQ.
 4. Atualiza apenas `/etc/caddy/openjobs-upstream.caddy`, valida o Caddyfile e
    executa `systemctl reload caddy`.
-5. Confirma o destino pelo header `X-OpenJobs-Slot` e observa por mais 30 segundos.
+5. Confirma o destino local e pelo domínio público pelo header `X-OpenJobs-Slot`
+   e pelo status JSON `UP`, e observa por mais 30 segundos.
 6. Em caso de falha até essa confirmação, restaura o upstream anterior.
 7. Após confirmar, espera 65 segundos para drenar a versão antiga e a para
    com SIGTERM, permitindo até 50 segundos para o encerramento.
 
-As APIs escutam somente em localhost. O Caddy recebe em `127.0.0.1:8082`,
-mantendo o destino atual do túnel Cloudflare. Não reinicia o serviço Caddy,
+As APIs escutam somente em localhost. O Caddy mantém o bloco HTTPS existente
+de `api.openjobs.shop`, incluindo headers, compressão e outros sites. Não reinicia o serviço Caddy,
 não recria RabbitMQ e não remove volumes ou imagens. O reload gracioso é
 documentado pelo [Caddy](https://caddyserver.com/docs/running).
 
@@ -37,24 +38,39 @@ esse é o arquivo usado pelo seu serviço** com `systemctl cat caddy`. Se for
 outro, informe `CADDYFILE` na execução. O `ExecReload` do serviço precisa
 recarregar esse mesmo arquivo.
 
-O bootstrap preserva a configuração existente e acrescenta um bloco local:
+O bootstrap altera somente a linha `reverse_proxy 127.0.0.1:8082` dentro
+do bloco existente do domínio, substituindo-a pelo import gerenciado:
 
 ```caddyfile
-http://127.0.0.1:8082 {
-    bind 127.0.0.1
+api.openjobs.shop {
+    header {
+        Access-Control-Allow-Origin "https://openjobs.shop"
+        Access-Control-Allow-Methods "GET, POST, PUT, PATCH, DELETE, OPTIONS"
+        Access-Control-Allow-Headers "Content-Type, Authorization"
+    }
+    encode zstd gzip
     import /etc/caddy/openjobs-upstream.caddy
 }
 ```
 
-Depois de construir e estabilizar a candidata, para a API antiga para liberar
-a porta 8082 e recarrega o Caddy. **Somente essa primeira instalação tem uma
-breve interrupção durante a transferência da porta.** Se falhar, restaura o
-Caddyfile original e reinicia a API antiga. Outros sites configurados no mesmo
-Caddyfile são preservados.
+Os headers acima são apenas o exemplo fornecido para o servidor: o script
+preserva os valores existentes, não os substitui pelo exemplo. Formatos
+diferentes de bloco/upstream são recusados antes de alterar configuração.
 
-O túnel deve continuar apontando para `http://localhost:8082`. Se o destino usa
-outra porta, informe `PROXY_PORT` com o valor correspondente. As portas das
-duas instâncias devem estar livres.
+Depois de estabilizar a candidata, recarrega o Caddy e confirma o domínio
+HTTPS localmente, com SNI e certificado válidos. A antiga continua atendendo
+até confirmar a troca e terminar a drenagem, inclusive no bootstrap.
+
+O tráfego externo deve passar pelo bloco do domínio no Caddy. Se um túnel
+Cloudflare estiver apontando diretamente para a API na porta 8082, ele precisa
+ser configurado para usar o Caddy; caso contrário, vai contornar a troca.
+Se o domínio público não confirmar a candidata, o script faz rollback e
+preserva a versão anterior, sem parar a instância que estava atendendo.
+As portas 8083 e 8084 precisam estar livres.
+
+Versões anteriores do script criavam um bloco com o comentário
+`# OpenJobs API: managed listener...` na porta 8082. Essa versão remove
+somente esse bloco gerado e migra o import para o domínio existente.
 
 ## Próximas atualizações
 
@@ -64,7 +80,7 @@ bash deploy.sh
 ```
 
 O script não faz `git pull` automaticamente. Não execute `docker compose down`
-nem recrie o serviço antigo `api` neste fluxo: ele disputa a porta do Caddy.
+nem recrie o serviço antigo `api` neste fluxo: ele não é mais o destino ativo.
 Os consumidores de e-mail das duas instâncias competem pela mesma fila
 durante a sobreposição.
 
@@ -79,7 +95,9 @@ START_TIMEOUT=420 STABLE_SECONDS=45 OBSERVE_SECONDS=45 bash deploy.sh
 | `CADDYFILE` | `/etc/caddy/Caddyfile` | Mesmo arquivo usado pelo serviço |
 | `CADDY_UPSTREAM_FILE` | `/etc/caddy/openjobs-upstream.caddy` | Fragmento gerenciado; mantenha após instalar |
 | `CADDY_SERVICE` | `caddy` | Nome do serviço systemd |
-| `PROXY_PORT` | 8082 | Porta estável do túnel; mantenha após instalar |
+| `API_HOST` | `api.openjobs.shop` | Bloco do domínio preservado e validado |
+| `CADDY_PORT` | 443 | Porta HTTPS já usada pelo Caddy |
+| `PROXY_PORT` | 8082 | Porta da API antiga; usada apenas na migração inicial |
 | `API_BLUE_PORT` | 8083 | Porta da instância blue |
 | `API_GREEN_PORT` | 8084 | Porta da instância green |
 | `START_TIMEOUT` | 300 | Prazo em segundos para iniciar e estabilizar |
@@ -109,7 +127,7 @@ manual da versão anterior.
 docker ps --filter name=openjobs-api
 docker logs --tail=100 openjobs-api-blue
 docker logs --tail=100 openjobs-api-green
-curl -i http://127.0.0.1:8082/api/actuator/health/readiness
+curl --resolve api.openjobs.shop:443:127.0.0.1 https://api.openjobs.shop/api/actuator/health/readiness
 sudo journalctl -u caddy -n 50 --no-pager
 ```
 
