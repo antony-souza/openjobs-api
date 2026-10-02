@@ -11,6 +11,8 @@ import java.util.UUID;
 public interface IRoleRepository extends IBaseRepository<RoleEntity, UUID> {
     Optional<RoleEntity> findByCode(String code);
 
+    Optional<RoleEntity> findByCodeAndDeletedAtIsNull(String code);
+
     Optional<RoleEntity> findByIdAndDeletedAtIsNull(UUID id);
 
     boolean existsByCodeAndDeletedAtIsNull(String code);

@@ -2,6 +2,7 @@ package com.antony.openjobs.modules.posts.model;
 
 import com.antony.openjobs.common.entities.BaseEntity;
 import com.antony.openjobs.modules.users.model.UserEntity;
+import com.antony.openjobs.utils.PostContentUtils;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -23,8 +24,8 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PostEntity extends BaseEntity {
-    @Size(max = 1000)
-    @Column(nullable = false, length = 1000)
+    @Size(max = PostContentUtils.MAX_LENGTH, message = "A publicação deve ter no máximo 3000 caracteres")
+    @Column(nullable = false, length = PostContentUtils.MAX_LENGTH)
     private String content;
 
     @Column(name = "file_url", columnDefinition = "TEXT")

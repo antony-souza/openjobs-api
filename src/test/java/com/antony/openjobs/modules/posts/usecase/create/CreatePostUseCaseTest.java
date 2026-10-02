@@ -3,6 +3,7 @@ package com.antony.openjobs.modules.posts.usecase.create;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -68,7 +69,7 @@ class CreatePostUseCaseTest {
     void shouldUploadFileAndSaveItsUrlOnPost() {
         var userId = UUID.randomUUID();
         var user = new UserEntity();
-        var file = org.mockito.Mockito.mock(MultipartFile.class);
+        var file = mock(MultipartFile.class);
         when(userRepository.findByIdAndDeletedAtIsNull(userId)).thenReturn(Optional.of(user));
         when(file.isEmpty()).thenReturn(false);
         when(fileUploadService.upload(file, "posts"))

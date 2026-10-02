@@ -24,7 +24,7 @@ import com.antony.openjobs.modules.applications.usecase.findall.FindAllApplicati
 import com.antony.openjobs.modules.applications.usecase.findall.FindAllApplicationsByCandidateIdUseCase;
 import com.antony.openjobs.modules.permissions.model.Permission;
 
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import org.springframework.web.bind.annotation.RequestBody;
 import jakarta.validation.Valid;
 
 import com.antony.openjobs.common.api.ApiResponse;

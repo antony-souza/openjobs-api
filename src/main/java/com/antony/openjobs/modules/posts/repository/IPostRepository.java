@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.stereotype.Repository;
 
 import com.antony.openjobs.common.repositories.IBaseRepository;
@@ -13,6 +14,9 @@ import com.antony.openjobs.modules.posts.usecase.findall.FindAllPostsByUserIdPro
 
 @Repository
 public interface IPostRepository extends IBaseRepository<PostEntity, UUID> {
+    @EntityGraph(attributePaths = "user")
+    Page<PostEntity> findByDeletedAtIsNullAndUser_DeletedAtIsNull(Pageable pageable);
+
     Page<FindAllPostsByUserIdProjection> findAllByUser_IdAndDeletedAtIsNull(UUID userId, Pageable pageable);
 
     Optional<PostEntity> findByIdAndDeletedAtIsNull(UUID postId);

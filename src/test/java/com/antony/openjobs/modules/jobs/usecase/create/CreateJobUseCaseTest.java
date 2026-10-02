@@ -18,6 +18,7 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -82,7 +83,7 @@ class CreateJobUseCaseTest {
 
         verifyNoInteractions(userRepository);
         verify(jobRepository).existsByTitleAndPublishedBy_IdAndDeletedAtIsNull(request.title(), userId);
-        verify(jobRepository, never()).save(org.mockito.ArgumentMatchers.any());
+        verify(jobRepository, never()).save(any());
     }
 
 }

@@ -14,6 +14,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -59,6 +60,6 @@ class CreateMenuItemUseCaseTest {
                             .isEqualTo("Um menu item já existe com o mesmo path");
                 });
 
-        verify(menuItemRepository, never()).save(org.mockito.ArgumentMatchers.any());
+        verify(menuItemRepository, never()).save(any());
     }
 }

@@ -1,6 +1,7 @@
 package com.antony.openjobs.modules.menuitens.repository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.stereotype.Repository;
@@ -13,4 +14,6 @@ public interface IMenuItemRepository extends IBaseRepository<MenuItemEntity, UUI
     List<MenuItemEntity> findAllByDeletedAtIsNull();
 
     boolean existsByPath(String path);
+
+    Optional<MenuItemEntity> findByPath(String path);
 }

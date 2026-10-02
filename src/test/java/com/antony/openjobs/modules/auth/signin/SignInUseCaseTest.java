@@ -41,7 +41,7 @@ class SignInUseCaseTest {
 
     @Test
     void shouldAuthenticateUserWithValidCredentials() {
-        var request = new SignInRequest("antony@example.com", "password123");
+        var request = new SignInRequest("  ANTONY@example.com  ", "password123");
         var userId = UUID.randomUUID();
         var roleId = UUID.randomUUID();
         var role = new RoleEntity();

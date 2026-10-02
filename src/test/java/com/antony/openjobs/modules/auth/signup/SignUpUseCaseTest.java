@@ -16,6 +16,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Optional;
@@ -39,7 +40,7 @@ class SignUpUseCaseTest {
     private IRoleRepository roleRepository;
 
     @Mock
-    private org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
+    private PasswordEncoder passwordEncoder;
 
     @Mock
     private TokenProvider tokenProvider;
@@ -56,7 +57,7 @@ class SignUpUseCaseTest {
     @Test
     void shouldCreateAccountWithNormalizedEmailAndEncodedPassword() {
         var roleId = UUID.randomUUID();
-        var request = new SignUpRequest("  Antony Souza  ", "  ANTONY@EXAMPLE.COM  ", "antony", "password123", roleId);
+        var request = new SignUpRequest("  Antony Souza  ", "  ANTONY@EXAMPLE.COM  ", "Antony", "password123");
         var userId = UUID.randomUUID();
         var savedUser = new UserEntity();
         savedUser.setId(userId);
@@ -64,8 +65,8 @@ class SignUpUseCaseTest {
         role.setId(roleId);
 
         when(userRepository.existsByEmailAndDeletedAtIsNull("antony@example.com")).thenReturn(false);
-        when(userRepository.existsByUsernameAndDeletedAtIsNull("antony")).thenReturn(false);
-        when(roleRepository.findByIdAndDeletedAtIsNull(roleId)).thenReturn(Optional.of(role));
+        when(userRepository.existsByUsernameIgnoreCaseAndDeletedAtIsNull("antony")).thenReturn(false);
+        when(roleRepository.findByCodeAndDeletedAtIsNull("candidate")).thenReturn(Optional.of(role));
         when(passwordEncoder.encode("password123")).thenReturn("encoded-password");
         when(userRepository.save(any(UserEntity.class))).thenReturn(savedUser);
         when(tokenProvider.generateToken(userId, roleId)).thenReturn("jwt-token");
@@ -95,7 +96,7 @@ class SignUpUseCaseTest {
 
     @Test
     void shouldRejectRegistrationWhenEmailAlreadyExists() {
-        var request = new SignUpRequest("Antony Souza", "ANTONY@example.com", "antony", "password123", UUID.randomUUID());
+        var request = new SignUpRequest("Antony Souza", "ANTONY@example.com", "antony", "password123");
         when(userRepository.existsByEmailAndDeletedAtIsNull("antony@example.com")).thenReturn(true);
 
         assertThatThrownBy(() -> signUpUseCase.execute(request))
@@ -112,9 +113,9 @@ class SignUpUseCaseTest {
 
     @Test
     void shouldRejectRegistrationWhenUsernameAlreadyExists() {
-        var request = new SignUpRequest("Antony Souza", "antony@example.com", "antony", "password123", UUID.randomUUID());
+        var request = new SignUpRequest("Antony Souza", "antony@example.com", "antony", "password123");
         when(userRepository.existsByEmailAndDeletedAtIsNull("antony@example.com")).thenReturn(false);
-        when(userRepository.existsByUsernameAndDeletedAtIsNull("antony")).thenReturn(true);
+        when(userRepository.existsByUsernameIgnoreCaseAndDeletedAtIsNull("antony")).thenReturn(true);
 
         assertThatThrownBy(() -> signUpUseCase.execute(request))
                 .isInstanceOf(ResponseStatusException.class)
@@ -129,19 +130,18 @@ class SignUpUseCaseTest {
     }
 
     @Test
-    void shouldRejectRegistrationWhenRoleDoesNotExist() {
-        var roleId = UUID.randomUUID();
-        var request = new SignUpRequest("Antony Souza", "antony@example.com", "antony", "password123", roleId);
+    void shouldRejectRegistrationWhenCandidateRoleDoesNotExist() {
+        var request = new SignUpRequest("Antony Souza", "antony@example.com", "antony", "password123");
         when(userRepository.existsByEmailAndDeletedAtIsNull("antony@example.com")).thenReturn(false);
-        when(userRepository.existsByUsernameAndDeletedAtIsNull("antony")).thenReturn(false);
-        when(roleRepository.findByIdAndDeletedAtIsNull(roleId)).thenReturn(Optional.empty());
+        when(userRepository.existsByUsernameIgnoreCaseAndDeletedAtIsNull("antony")).thenReturn(false);
+        when(roleRepository.findByCodeAndDeletedAtIsNull("candidate")).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> signUpUseCase.execute(request))
                 .isInstanceOf(ResponseStatusException.class)
                 .satisfies(exception -> {
                     var responseException = (ResponseStatusException) exception;
-                    assertThat(responseException.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-                    assertThat(responseException.getReason()).isEqualTo("Role não encontrada");
+                    assertThat(responseException.getStatusCode()).isEqualTo(HttpStatus.SERVICE_UNAVAILABLE);
+                    assertThat(responseException.getReason()).isEqualTo("Cadastro indisponível no momento");
                 });
 
         verify(userRepository, never()).save(any());

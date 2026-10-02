@@ -22,6 +22,9 @@ public class UserEntity extends BaseEntity {
     @Column(nullable = false, unique = true)
     private String username;
 
+    @Column(name = "avatar_url", columnDefinition = "TEXT")
+    private String avatarUrl;
+
     @Column(nullable = false)
     @Size(min = 6, max = 100)
     private String password;

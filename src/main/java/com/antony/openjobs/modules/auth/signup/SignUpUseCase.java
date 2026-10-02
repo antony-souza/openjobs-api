@@ -9,10 +9,13 @@ import com.antony.openjobs.modules.users.model.UserEntity;
 import com.antony.openjobs.modules.users.repository.IUserRepository;
 import com.antony.openjobs.services.email.EmailMessage;
 import com.antony.openjobs.utils.QueueNameUtils;
+import com.antony.openjobs.utils.RoleCodeUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.Locale;
 
 @Service
 @RequiredArgsConstructor
@@ -25,7 +28,7 @@ public class SignUpUseCase {
 
     public SignUpResponse execute(SignUpRequest request) {
         String email = request.email().trim().toLowerCase();
-        String username = request.username().trim();
+        String username = request.username().trim().toLowerCase(Locale.ROOT);
 
         if (userRepository.existsByEmailAndDeletedAtIsNull(email)) {
             throw new ResponseStatusException(
@@ -34,17 +37,17 @@ public class SignUpUseCase {
             );
         }
 
-        if (userRepository.existsByUsernameAndDeletedAtIsNull(username)) {
+        if (userRepository.existsByUsernameIgnoreCaseAndDeletedAtIsNull(username)) {
             throw new ResponseStatusException(
                     HttpStatus.CONFLICT,
                     "Este username já está cadastrado"
             );
         }
 
-        RoleEntity role = roleRepository.findByIdAndDeletedAtIsNull(request.roleId())
+        RoleEntity role = roleRepository.findByCodeAndDeletedAtIsNull(RoleCodeUtils.CANDIDATE)
                 .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
-                        "Role não encontrada"
+                        HttpStatus.SERVICE_UNAVAILABLE,
+                        "Cadastro indisponível no momento"
                 ));
 
         UserEntity user = new UserEntity();

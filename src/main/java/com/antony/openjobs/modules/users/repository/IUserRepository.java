@@ -17,5 +17,11 @@ public interface IUserRepository extends IBaseRepository<UserEntity, UUID> {
 
     boolean existsByUsernameAndDeletedAtIsNull(String username);
 
+    boolean existsByUsernameIgnoreCaseAndDeletedAtIsNull(String username);
+
     Optional<UserEntity> findByIdAndDeletedAtIsNull(UUID id);
+
+    boolean existsByEmailIgnoreCaseAndIdNotAndDeletedAtIsNull(String email, UUID id);
+
+    boolean existsByUsernameIgnoreCaseAndIdNotAndDeletedAtIsNull(String username, UUID id);
 }

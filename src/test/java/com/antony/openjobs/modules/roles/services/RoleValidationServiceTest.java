@@ -12,6 +12,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -47,9 +48,9 @@ class RoleValidationServiceTest {
                 .isInstanceOf(ResponseStatusException.class)
                 .satisfies(exception -> {
                     ResponseStatusException responseException = (ResponseStatusException) exception;
-                    org.assertj.core.api.Assertions.assertThat(responseException.getStatusCode())
+                    assertThat(responseException.getStatusCode())
                             .isEqualTo(HttpStatus.CONFLICT);
-                    org.assertj.core.api.Assertions.assertThat(responseException.getReason())
+                    assertThat(responseException.getReason())
                             .isEqualTo("Já existe uma role com este código");
                 });
     }

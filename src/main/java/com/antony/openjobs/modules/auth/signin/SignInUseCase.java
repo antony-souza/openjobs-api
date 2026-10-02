@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Locale;
+
 @Service
 @RequiredArgsConstructor
 public class SignInUseCase {
@@ -20,7 +22,7 @@ public class SignInUseCase {
     @Transactional(readOnly = true)
     public SignInResponse execute(SignInRequest request) {
         UserEntity user = userRepository
-                .findByEmailAndDeletedAtIsNull(request.email())
+                .findByEmailAndDeletedAtIsNull(request.email().trim().toLowerCase(Locale.ROOT))
                 .orElseThrow(this::invalidCredentials);
 
         boolean passwordMatch = passwordEncoder.matches(request.password(), user.getPassword());
@@ -38,4 +40,3 @@ public class SignInUseCase {
         return new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Email ou senha inválidos");
     }
 }
-
