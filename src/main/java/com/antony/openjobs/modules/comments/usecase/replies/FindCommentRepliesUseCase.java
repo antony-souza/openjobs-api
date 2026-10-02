@@ -1,8 +1,9 @@
-package com.antony.openjobs.modules.comments.usecase.findall;
+package com.antony.openjobs.modules.comments.usecase.replies;
 
 import com.antony.openjobs.common.pagination.IPaginationResponse;
 import com.antony.openjobs.modules.comments.repository.ICommentRepository;
 import com.antony.openjobs.modules.comments.services.CommentMappingService;
+import com.antony.openjobs.modules.comments.services.CommentValidationService;
 import com.antony.openjobs.modules.comments.usecase.CommentResponse;
 import com.antony.openjobs.modules.posts.services.PostValidationService;
 import lombok.RequiredArgsConstructor;
@@ -15,17 +16,18 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class FindAllPostCommentsUseCase {
+public class FindCommentRepliesUseCase {
     private final PostValidationService postValidationService;
+    private final CommentValidationService commentValidationService;
     private final ICommentRepository commentRepository;
     private final CommentMappingService commentMappingService;
 
     @Transactional(readOnly = true)
-    public IPaginationResponse<CommentResponse> execute(UUID postId, UUID viewerId, int page) {
+    public IPaginationResponse<CommentResponse> execute(UUID postId, UUID commentId, UUID viewerId, int page) {
         postValidationService.findActivePost(postId);
-        var pageable = PageRequest.of(Math.max(page, 0), 10, Sort.by(Sort.Direction.DESC, "createdAt", "id"));
-        var comments = commentRepository.findByPost_IdAndParentCommentIsNullAndDeletedAtIsNullAndUser_DeletedAtIsNull(postId, pageable);
-
-        return commentMappingService.map(comments, viewerId);
+        commentValidationService.findActiveComment(postId, commentId);
+        var pageable = PageRequest.of(Math.max(page, 0), 10, Sort.by(Sort.Direction.ASC, "createdAt", "id"));
+        var replies = commentRepository.findByParentComment_IdAndDeletedAtIsNullAndUser_DeletedAtIsNull(commentId, pageable);
+        return commentMappingService.map(replies, viewerId);
     }
 }

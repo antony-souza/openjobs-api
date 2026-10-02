@@ -23,4 +23,6 @@ public interface IPostRepository extends IBaseRepository<PostEntity, UUID> {
     Page<FindAllPostsByUserIdProjection> findAllByUser_IdAndDeletedAtIsNull(UUID userId, Pageable pageable);
 
     Optional<PostEntity> findByIdAndDeletedAtIsNull(UUID postId);
+
+    long countByUser_IdAndDeletedAtIsNull(UUID userId);
 }

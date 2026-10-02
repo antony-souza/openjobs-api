@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,7 +32,7 @@ public class PostFeedMappingService {
 
         var likes = counts(likeRepository.countForPosts(ids));
         var comments = counts(commentRepository.countForPosts(ids));
-        var liked = likeRepository.findByPost_IdInAndUser_IdAndDeletedAtIsNull(ids, viewerId)
+        Set<UUID> liked = viewerId == null ? Set.of() : likeRepository.findByPost_IdInAndUser_IdAndDeletedAtIsNull(ids, viewerId)
                 .stream().map(like -> like.getPost().getId()).collect(Collectors.toSet());
 
         var response = posts.map(post -> new FeedResponse(

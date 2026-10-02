@@ -8,9 +8,15 @@ import com.antony.openjobs.common.repositories.IBaseRepository;
 import com.antony.openjobs.modules.likes.model.LikeEntity;
 import com.antony.openjobs.modules.posts.repository.projection.PostCount;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.EntityGraph;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.query.Param;
 
 public interface ILikeRepository extends IBaseRepository<LikeEntity, UUID> {
+    @EntityGraph(attributePaths = "user")
+    Page<LikeEntity> findByPost_IdAndDeletedAtIsNullAndUser_DeletedAtIsNull(UUID postId, Pageable pageable);
+
     @Query("""
             select l.post.id as postId, count(l) as total
             from LikeEntity l

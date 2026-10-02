@@ -34,13 +34,21 @@ class ProfileControllerTest {
                 }).build();
 
         mvc.perform(multipart("/v1/users/me").file(new MockMultipartFile("avatar", "photo.png", "image/png", new byte[]{1, 2}))
+                .file(new MockMultipartFile("cover", "cover.png", "image/png", new byte[]{3, 4}))
                 .param("name", "Maria").param("email", "maria@example.com").param("username", "maria")
-                .param("removeAvatar", "false").param("password", "").param("userId", UUID.randomUUID().toString()).param("roleId", UUID.randomUUID().toString())
+                .param("removeAvatar", "false").param("removeCover", "true").param("bio", "Minha biografia")
+                .param("portfolioUrl", "https://example.com").param("linkedinUrl", "https://linkedin.com/in/maria")
+                .param("password", "").param("userId", UUID.randomUUID().toString()).param("roleId", UUID.randomUUID().toString())
                 .with(request -> { request.setMethod("PUT"); return request; }))
                 .andExpect(status().isOk()).andExpect(jsonPath("$.data.avatarUrl").value("https://example.com/photo.png"));
         var request = ArgumentCaptor.forClass(UpdateProfileRequest.class); verify(useCase).execute(eq(userId), request.capture());
         assertThat(request.getValue().avatar().getOriginalFilename()).isEqualTo("photo.png");
         assertThat(request.getValue().removeAvatar()).isFalse();
         assertThat(request.getValue().password()).isNull();
+        assertThat(request.getValue().cover().getOriginalFilename()).isEqualTo("cover.png");
+        assertThat(request.getValue().removeCover()).isTrue();
+        assertThat(request.getValue().bio()).isEqualTo("Minha biografia");
+        assertThat(request.getValue().portfolioUrl()).isEqualTo("https://example.com");
+        assertThat(request.getValue().linkedinUrl()).isEqualTo("https://linkedin.com/in/maria");
     }
 }

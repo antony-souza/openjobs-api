@@ -1,0 +1,6 @@
+ALTER TABLE users
+    ADD COLUMN headline VARCHAR(120),
+    ADD COLUMN bio VARCHAR(2000),
+    ADD COLUMN location VARCHAR(120),
+    ADD COLUMN portfolio_url VARCHAR(2048),
+    ADD COLUMN linkedin_url VARCHAR(2048);

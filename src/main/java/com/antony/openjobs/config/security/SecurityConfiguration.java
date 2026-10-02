@@ -1,6 +1,7 @@
 package com.antony.openjobs.config.security;
 
 import jakarta.servlet.DispatcherType;
+import org.springframework.http.HttpMethod;
 import lombok.RequiredArgsConstructor;
 import org.springframework.aop.Advisor;
 import org.springframework.aop.support.annotation.AnnotationMatchingPointcut;
@@ -54,6 +55,13 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(auth -> auth
                         .dispatcherTypeMatchers(DispatcherType.ERROR, DispatcherType.FORWARD).permitAll()
                         .requestMatchers("/v1/auth/**").permitAll()
+                        .requestMatchers(HttpMethod.GET,
+                                "/v1/profiles/**",
+                                "/v1/community/posts/*/comments",
+                                "/v1/community/posts/*/comments/*/replies",
+                                "/v1/community/posts/*/likes",
+                                "/v1/community/posts/*/comments/*/likes"
+                        ).permitAll()
                         .anyRequest().authenticated()
                 )
 

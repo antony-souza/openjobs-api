@@ -25,6 +25,24 @@ public class UserEntity extends BaseEntity {
     @Column(name = "avatar_url", columnDefinition = "TEXT")
     private String avatarUrl;
 
+    @Column(name = "cover_url", columnDefinition = "TEXT")
+    private String coverUrl;
+
+    @Column(length = 120)
+    private String headline;
+
+    @Column(length = 2000)
+    private String bio;
+
+    @Column(length = 120)
+    private String location;
+
+    @Column(name = "portfolio_url", length = 2048)
+    private String portfolioUrl;
+
+    @Column(name = "linkedin_url", length = 2048)
+    private String linkedinUrl;
+
     @Column(nullable = false)
     @Size(min = 6, max = 100)
     private String password;

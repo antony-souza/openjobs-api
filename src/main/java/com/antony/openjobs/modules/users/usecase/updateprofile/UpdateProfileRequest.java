@@ -19,8 +19,22 @@ public record UpdateProfileRequest(
 
         MultipartFile avatar,
         boolean removeAvatar,
-        @Size(min = 6, max = 72, message = "A senha deve ter entre 6 e 72 caracteres") String password
+        @Size(min = 6, max = 72, message = "A senha deve ter entre 6 e 72 caracteres") String password,
+        @Size(max = 120) String headline,
+        @Size(max = 2000) String bio,
+        @Size(max = 120) String location,
+        @Size(max = 2048) String portfolioUrl,
+        @Size(max = 2048) String linkedinUrl,
+        MultipartFile cover,
+        boolean removeCover
 ) {
+    public UpdateProfileRequest(String name, String email, String username, MultipartFile avatar, boolean removeAvatar, String password) {
+        this(name, email, username, avatar, removeAvatar, password, null, null, null, null, null, null, false);
+    }
+    public UpdateProfileRequest(String name, String email, String username, MultipartFile avatar, boolean removeAvatar,
+                                String password, String headline, String bio, String location, String portfolioUrl, String linkedinUrl) {
+        this(name, email, username, avatar, removeAvatar, password, headline, bio, location, portfolioUrl, linkedinUrl, null, false);
+    }
     public UpdateProfileRequest {
         if (password != null && password.isBlank()) {
             password = null;

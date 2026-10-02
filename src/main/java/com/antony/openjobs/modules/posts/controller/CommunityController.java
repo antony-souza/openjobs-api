@@ -7,6 +7,7 @@ import com.antony.openjobs.modules.comments.usecase.CommentResponse;
 import com.antony.openjobs.modules.comments.usecase.create.CreateCommentRequest;
 import com.antony.openjobs.modules.comments.usecase.create.CreateCommentUseCase;
 import com.antony.openjobs.modules.comments.usecase.findall.FindAllPostCommentsUseCase;
+import com.antony.openjobs.modules.comments.usecase.replies.FindCommentRepliesUseCase;
 import com.antony.openjobs.modules.likes.usecase.set.SetPostLikeRequest;
 import com.antony.openjobs.modules.likes.usecase.set.SetPostLikeResponse;
 import com.antony.openjobs.modules.likes.usecase.set.SetPostLikeUseCase;
@@ -21,6 +22,17 @@ import com.antony.openjobs.modules.posts.usecase.update.UpdatePostResponse;
 import com.antony.openjobs.modules.posts.usecase.update.UpdatePostUseCase;
 import com.antony.openjobs.modules.posts.usecase.delete.DeletePostResponse;
 import com.antony.openjobs.modules.posts.usecase.delete.DeletePostUseCase;
+import com.antony.openjobs.modules.commentlikes.usecase.set.SetCommentLikeUseCase;
+import com.antony.openjobs.modules.commentlikes.usecase.set.SetCommentLikeRequest;
+import com.antony.openjobs.modules.commentlikes.usecase.set.SetCommentLikeResponse;
+import com.antony.openjobs.modules.commentlikes.usecase.findall.FindCommentLikesUseCase;
+import com.antony.openjobs.modules.likes.usecase.findall.FindPostLikesUseCase;
+import com.antony.openjobs.modules.comments.usecase.update.UpdateCommentUseCase;
+import com.antony.openjobs.modules.comments.usecase.update.UpdateCommentRequest;
+import com.antony.openjobs.modules.comments.usecase.update.UpdateCommentResponse;
+import com.antony.openjobs.modules.comments.usecase.delete.DeleteCommentUseCase;
+import com.antony.openjobs.modules.comments.usecase.delete.DeleteCommentResponse;
+import com.antony.openjobs.modules.users.usecase.UserSummaryResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -51,6 +63,32 @@ public class CommunityController {
     private final FindProfilePostsUseCase findProfilePostsUseCase;
     private final UpdatePostUseCase updatePostUseCase;
     private final DeletePostUseCase deletePostUseCase;
+    private final FindCommentRepliesUseCase findCommentRepliesUseCase;
+    private final UpdateCommentUseCase updateCommentUseCase;
+    private final SetCommentLikeUseCase setCommentLikeUseCase;
+    private final FindPostLikesUseCase findPostLikesUseCase;
+    private final FindCommentLikesUseCase findCommentLikesUseCase;
+    private final DeleteCommentUseCase deleteCommentUseCase;
+
+    @DeleteMapping("/posts/{postId}/comments/{commentId}")
+    public ResponseEntity<ApiResponse<DeleteCommentResponse>> deleteComment(
+            @AuthenticationPrincipal AuthenticatedUser user,
+            @PathVariable UUID postId, @PathVariable UUID commentId
+    ) {
+        var response = deleteCommentUseCase.execute(postId, commentId, user.userId());
+        return ResponseEntity.ok(ApiResponse.success(response));
+    }
+
+    @GetMapping("/posts/{postId}/comments/{commentId}/replies")
+    public ResponseEntity<ApiResponse<IPaginationResponse<CommentResponse>>> replies(
+            @AuthenticationPrincipal AuthenticatedUser user,
+            @PathVariable UUID postId,
+            @PathVariable UUID commentId,
+            @RequestParam(defaultValue = "0") int page
+    ) {
+        var response = findCommentRepliesUseCase.execute(postId, commentId, user == null ? null : user.userId(), page);
+        return ResponseEntity.ok(ApiResponse.success(response));
+    }
 
     @GetMapping("/posts/me")
     public ResponseEntity<ApiResponse<IPaginationResponse<FeedResponse>>> myPosts(
@@ -102,10 +140,11 @@ public class CommunityController {
 
     @GetMapping("/posts/{postId}/comments")
     public ResponseEntity<ApiResponse<IPaginationResponse<CommentResponse>>> comments(
+            @AuthenticationPrincipal AuthenticatedUser user,
             @PathVariable UUID postId,
             @RequestParam(defaultValue = "0") int page
     ) {
-        var response = findAllPostCommentsUseCase.execute(postId, page);
+        var response = findAllPostCommentsUseCase.execute(postId, user == null ? null : user.userId(), page);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
@@ -128,4 +167,41 @@ public class CommunityController {
         var response = setPostLikeUseCase.execute(postId, user.userId(), request);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
+    @PutMapping("/posts/{postId}/comments/{commentId}")
+    public ResponseEntity<ApiResponse<UpdateCommentResponse>> updateComment(
+            @AuthenticationPrincipal AuthenticatedUser user,
+            @PathVariable UUID postId, @PathVariable UUID commentId,
+            @Valid @RequestBody UpdateCommentRequest request
+    ) {
+        var response = updateCommentUseCase.execute(postId, commentId, user.userId(), request);
+        return ResponseEntity.ok(ApiResponse.success(response));
+    }
+
+    @PutMapping("/posts/{postId}/comments/{commentId}/like")
+    public ResponseEntity<ApiResponse<SetCommentLikeResponse>> likeComment(
+            @AuthenticationPrincipal AuthenticatedUser user,
+            @PathVariable UUID postId, @PathVariable UUID commentId,
+            @RequestBody SetCommentLikeRequest request
+    ) {
+        var response = setCommentLikeUseCase.execute(postId, commentId, user.userId(), request);
+        return ResponseEntity.ok(ApiResponse.success(response));
+    }
+
+    @GetMapping("/posts/{postId}/likes")
+    public ResponseEntity<ApiResponse<IPaginationResponse<UserSummaryResponse>>> postLikes(
+            @PathVariable UUID postId, @RequestParam(defaultValue = "0") int page
+    ) {
+        var response = findPostLikesUseCase.execute(postId, page);
+        return ResponseEntity.ok(ApiResponse.success(response));
+    }
+
+    @GetMapping("/posts/{postId}/comments/{commentId}/likes")
+    public ResponseEntity<ApiResponse<IPaginationResponse<UserSummaryResponse>>> commentLikes(
+            @PathVariable UUID postId, @PathVariable UUID commentId,
+            @RequestParam(defaultValue = "0") int page
+    ) {
+        var response = findCommentLikesUseCase.execute(postId, commentId, page);
+        return ResponseEntity.ok(ApiResponse.success(response));
+    }
+
 }

@@ -1,6 +1,15 @@
 package com.antony.openjobs.modules.posts.controller;
 
 import com.antony.openjobs.common.pagination.IPaginationResponse;
+import com.antony.openjobs.modules.comments.usecase.replies.FindCommentRepliesUseCase;
+import com.antony.openjobs.modules.comments.usecase.update.UpdateCommentUseCase;
+import com.antony.openjobs.modules.comments.usecase.update.UpdateCommentResponse;
+import com.antony.openjobs.modules.comments.usecase.delete.DeleteCommentUseCase;
+import com.antony.openjobs.modules.comments.usecase.delete.DeleteCommentResponse;
+import org.springframework.http.MediaType;
+import com.antony.openjobs.modules.commentlikes.usecase.set.SetCommentLikeUseCase;
+import com.antony.openjobs.modules.commentlikes.usecase.findall.FindCommentLikesUseCase;
+import com.antony.openjobs.modules.likes.usecase.findall.FindPostLikesUseCase;
 import com.antony.openjobs.config.security.AuthenticatedUser;
 import com.antony.openjobs.modules.comments.usecase.create.CreateCommentUseCase;
 import com.antony.openjobs.modules.comments.usecase.findall.FindAllPostCommentsUseCase;
@@ -38,6 +47,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -47,6 +57,8 @@ class CommunityControllerTest {
     final UpdatePostUseCase updatePost = mock(UpdatePostUseCase.class);
     final DeletePostUseCase deletePost = mock(DeletePostUseCase.class);
     final FindProfilePostsUseCase findProfilePosts = mock(FindProfilePostsUseCase.class);
+    final UpdateCommentUseCase updateComment = mock(UpdateCommentUseCase.class);
+    final DeleteCommentUseCase deleteComment = mock(DeleteCommentUseCase.class);
     MockMvc mvc;
 
     @BeforeEach
@@ -54,7 +66,9 @@ class CommunityControllerTest {
         var controller = new CommunityController(
                 mock(FindCommunityFeedUseCase.class), mock(FindAllPostCommentsUseCase.class),
                 mock(CreateCommentUseCase.class), mock(SetPostLikeUseCase.class),
-                mock(CreatePostUseCase.class), findProfilePosts, updatePost, deletePost
+                mock(CreatePostUseCase.class), findProfilePosts, updatePost, deletePost,
+                mock(FindCommentRepliesUseCase.class), updateComment, mock(SetCommentLikeUseCase.class),
+                mock(FindPostLikesUseCase.class), mock(FindCommentLikesUseCase.class), deleteComment
         );
         mvc = MockMvcBuilders.standaloneSetup(controller)
                 .setControllerAdvice(new GlobalExceptionHandler())
@@ -108,4 +122,21 @@ class CommunityControllerTest {
                 .andExpect(status().isOk());
         verify(deletePost).execute(postId, userId);
     }
+    @Test
+    void editsAndDeletesCommentsUsingTheAuthenticatedIdentity() throws Exception {
+        var postId = UUID.randomUUID();
+        var commentId = UUID.randomUUID();
+        when(updateComment.execute(eq(postId), eq(commentId), eq(userId), any())).thenReturn(new UpdateCommentResponse("Atualizado"));
+        mvc.perform(put("/v1/community/posts/{postId}/comments/{commentId}", postId, commentId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"content\":\"Texto atualizado\",\"userId\":\"" + UUID.randomUUID() + "\"}"))
+                .andExpect(status().isOk());
+        verify(updateComment).execute(eq(postId), eq(commentId), eq(userId), any());
+        when(deleteComment.execute(postId, commentId, userId)).thenReturn(new DeleteCommentResponse("Excluído"));
+        mvc.perform(delete("/v1/community/posts/{postId}/comments/{commentId}", postId, commentId)
+                        .param("userId", UUID.randomUUID().toString()))
+                .andExpect(status().isOk());
+        verify(deleteComment).execute(postId, commentId, userId);
+    }
+
 }

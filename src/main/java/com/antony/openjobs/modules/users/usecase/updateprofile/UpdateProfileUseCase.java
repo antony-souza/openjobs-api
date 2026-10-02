@@ -4,6 +4,7 @@ import com.antony.openjobs.config.upload.IFileUploadService;
 import com.antony.openjobs.modules.users.model.UserEntity;
 import com.antony.openjobs.modules.users.repository.IUserRepository;
 import com.antony.openjobs.modules.users.usecase.ProfileResponse;
+import com.antony.openjobs.utils.PublicProfileUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -36,21 +37,33 @@ public class UpdateProfileUseCase {
         if (userRepository.existsByUsernameIgnoreCaseAndIdNotAndDeletedAtIsNull(username, userId)) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Este @usuário já está cadastrado");
         }
+        var portfolioUrl = PublicProfileUtils.cleanUrl(request.portfolioUrl());
+        var linkedinUrl = PublicProfileUtils.cleanUrl(request.linkedinUrl());
         if (request.avatar() != null && !request.avatar().isEmpty()) {
-            user.setAvatarUrl(uploadAvatar(request.avatar(), userId));
+            user.setAvatarUrl(uploadImage(request.avatar(), "avatars/" + userId));
         } else if (request.removeAvatar()) {
             user.setAvatarUrl(null);
+        }
+        if (request.cover() != null && !request.cover().isEmpty()) {
+            user.setCoverUrl(uploadImage(request.cover(), "covers/" + userId));
+        } else if (request.removeCover()) {
+            user.setCoverUrl(null);
         }
         user.setName(request.name().trim());
         user.setEmail(email);
         user.setUsername(username);
+        user.setHeadline(PublicProfileUtils.cleanText(request.headline()));
+        user.setBio(PublicProfileUtils.cleanText(request.bio()));
+        user.setLocation(PublicProfileUtils.cleanText(request.location()));
+        user.setPortfolioUrl(portfolioUrl);
+        user.setLinkedinUrl(linkedinUrl);
         if (request.password() != null) {
             user.setPassword(passwordEncoder.encode(request.password()));
         }
         return ProfileResponse.from(userRepository.save(user));
     }
 
-    private String uploadAvatar(MultipartFile file, UUID userId) {
+    private String uploadImage(MultipartFile file, String folder) {
         if (file.getSize() > 5 * 1024 * 1024) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A foto deve ter no máximo 5 MB");
         }
@@ -77,7 +90,7 @@ public class UpdateProfileUseCase {
         } catch (IOException exception) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Não foi possível ler a foto", exception);
         }
-        return fileUploadService.upload(file, "avatars/" + userId);
+        return fileUploadService.upload(file, folder);
     }
 
     private UserEntity findUser(UUID id) {

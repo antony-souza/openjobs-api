@@ -66,6 +66,41 @@ class UpdateProfileUseCaseTest {
         assertThat(result.avatarUrl()).isNull(); assertThat(result.role()).isEqualTo("Candidato"); verifyNoInteractions(uploads);
     }
 
+    @Test void uploadsCoverAndKeepsAvatarThenRemovesOnlyCover() throws Exception {
+        var user = user();
+        when(users.findByIdAndDeletedAtIsNull(user.getId())).thenReturn(Optional.of(user));
+        when(users.save(user)).thenReturn(user);
+        var bytes = new ByteArrayOutputStream();
+        ImageIO.write(new BufferedImage(8, 2, BufferedImage.TYPE_INT_RGB), "png", bytes);
+        var file = new MockMultipartFile("cover", "cover.png", "image/png", bytes.toByteArray());
+        when(uploads.upload(file, "covers/" + user.getId())).thenReturn("https://example.com/cover.png");
+        var result = useCase.execute(user.getId(), new UpdateProfileRequest("Maria", "maria@example.com", "maria",
+                null, false, null, null, null, null, null, null, file, false));
+        assertThat(result.coverUrl()).isEqualTo("https://example.com/cover.png");
+        assertThat(result.avatarUrl()).isEqualTo("https://example.com/old.png");
+        var unchanged = useCase.execute(user.getId(), new UpdateProfileRequest("Maria", "maria@example.com", "maria", null, false, null));
+        assertThat(unchanged.coverUrl()).isEqualTo(result.coverUrl());
+        var removed = useCase.execute(user.getId(), new UpdateProfileRequest("Maria", "maria@example.com", "maria",
+                null, false, null, null, null, null, null, null, null, true));
+        assertThat(removed.coverUrl()).isNull();
+        assertThat(removed.avatarUrl()).isEqualTo(result.avatarUrl());
+    }
+
+    @Test void rejectsInvalidOrOversizedCoverBeforeUploading() {
+        var user = user();
+        when(users.findByIdAndDeletedAtIsNull(user.getId())).thenReturn(Optional.of(user));
+        var files = new MockMultipartFile[]{
+                new MockMultipartFile("cover", "fake.png", "image/png", new byte[]{1, 2}),
+                new MockMultipartFile("cover", "large.png", "image/png", new byte[5 * 1024 * 1024 + 1])
+        };
+        for (var file : files) {
+            assertThatThrownBy(() -> useCase.execute(user.getId(), new UpdateProfileRequest("Maria", "maria@example.com", "maria",
+                    null, false, null, null, null, null, null, null, file, false))).isInstanceOf(ResponseStatusException.class);
+        }
+        verifyNoInteractions(uploads);
+        verify(users, never()).save(any());
+    }
+
     @Test void blankPasswordKeepsExistingHash() {
         var user = user();
         when(users.findByIdAndDeletedAtIsNull(user.getId())).thenReturn(Optional.of(user));
