@@ -8,6 +8,8 @@ import com.antony.openjobs.modules.posts.model.PostEntity;
 import com.antony.openjobs.modules.posts.repository.IPostRepository;
 import com.antony.openjobs.modules.users.model.UserEntity;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import com.antony.openjobs.modules.posts.services.PostFeedMappingService;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -22,7 +24,12 @@ class FindCommunityFeedUseCaseTest {
     @Mock IPostRepository posts;
     @Mock ILikeRepository likes;
     @Mock ICommentRepository comments;
-    @InjectMocks FindCommunityFeedUseCase useCase;
+    FindCommunityFeedUseCase useCase;
+
+    @BeforeEach
+    void setUp() {
+        useCase = new FindCommunityFeedUseCase(posts, new PostFeedMappingService(likes, comments));
+    }
 
     @Test void returnsPostsFromDifferentAuthorsWithCountsAndNewestFirstSort() {
         var viewer = UUID.randomUUID();

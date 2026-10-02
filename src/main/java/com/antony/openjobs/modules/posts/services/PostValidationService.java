@@ -19,4 +19,12 @@ public class PostValidationService {
                 .filter(post -> post.getUser().getDeletedAt() == null)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Publicação não encontrada"));
     }
+
+    public PostEntity findOwnedPost(UUID postId, UUID userId) {
+        var post = findActivePost(postId);
+        if (!post.getUser().getId().equals(userId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Você só pode alterar suas próprias publicações");
+        }
+        return post;
+    }
 }

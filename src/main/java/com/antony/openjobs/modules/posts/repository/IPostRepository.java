@@ -17,6 +17,9 @@ public interface IPostRepository extends IBaseRepository<PostEntity, UUID> {
     @EntityGraph(attributePaths = "user")
     Page<PostEntity> findByDeletedAtIsNullAndUser_DeletedAtIsNull(Pageable pageable);
 
+    @EntityGraph(attributePaths = "user")
+    Page<PostEntity> findByUser_IdAndDeletedAtIsNullAndUser_DeletedAtIsNull(UUID userId, Pageable pageable);
+
     Page<FindAllPostsByUserIdProjection> findAllByUser_IdAndDeletedAtIsNull(UUID userId, Pageable pageable);
 
     Optional<PostEntity> findByIdAndDeletedAtIsNull(UUID postId);

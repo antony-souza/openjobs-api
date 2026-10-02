@@ -10,6 +10,13 @@ import com.antony.openjobs.modules.likes.usecase.set.SetPostLikeRequest;
 import com.antony.openjobs.modules.likes.model.LikeEntity;
 import com.antony.openjobs.modules.likes.repository.ILikeRepository;
 import com.antony.openjobs.modules.posts.model.PostEntity;
+import com.antony.openjobs.modules.posts.usecase.profile.FindProfilePostsUseCase;
+import com.antony.openjobs.modules.posts.usecase.update.UpdatePostUseCase;
+import com.antony.openjobs.modules.posts.usecase.update.UpdatePostRequest;
+import com.antony.openjobs.modules.posts.usecase.delete.DeletePostUseCase;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.HttpStatus;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import com.antony.openjobs.modules.posts.repository.IPostRepository;
 import com.antony.openjobs.modules.posts.usecase.create.CreatePostUseCase;
 import com.antony.openjobs.modules.posts.usecase.create.CreatePostRequest;
@@ -43,6 +50,9 @@ class CommunityIntegrationTest {
     @Autowired EntityManager entityManager;
     @Autowired CreatePostUseCase createPost;
     @Autowired Validator validator;
+    @Autowired FindProfilePostsUseCase findProfilePosts;
+    @Autowired UpdatePostUseCase updatePost;
+    @Autowired DeletePostUseCase deletePost;
 
     @Test
     void persistsThreeThousandCharactersAndRejectsContentAboveTheLimit() {
@@ -90,6 +100,56 @@ class CommunityIntegrationTest {
         assertThat(created.content()).isEqualTo("Obrigado!");
         assertThat(created.author().id()).isEqualTo(joao.getId());
         assertThat(findFeed.execute(maria.getId(), 0, 1).items().get(0).commentsCount()).isEqualTo(2);
+    }
+
+    @Test
+    void listsOnlyOwnPostsAndPersistsEditsAndSoftDeletion() {
+        var author = user("Autor do perfil");
+        var other = user("Outro autor");
+        var older = post(author, LocalDateTime.now().plusDays(1));
+        var newer = post(author, LocalDateTime.now().plusDays(2));
+        post(other, LocalDateTime.now().plusDays(3));
+        newer.setFileUrl("https://example.invalid/original.png");
+        posts.saveAndFlush(newer);
+        entityManager.clear();
+
+        var first = findProfilePosts.execute(author.getId(), 0, 1);
+        assertThat(first.total()).isEqualTo(2);
+        assertThat(first.items()).extracting(FeedResponse::id).containsExactly(newer.getId());
+        assertThat(findProfilePosts.execute(author.getId(), 1, 1).items())
+                .extracting(FeedResponse::id).containsExactly(older.getId());
+
+        var originalCreatedAt = posts.findById(newer.getId()).orElseThrow().getCreatedAt();
+        var editedContent = "Texto editado ".repeat(200).trim();
+        updatePost.execute(newer.getId(), author.getId(), new UpdatePostRequest("  " + editedContent + "  ", null, false));
+        entityManager.flush();
+        entityManager.clear();
+        var edited = posts.findById(newer.getId()).orElseThrow();
+        assertThat(edited.getContent()).isEqualTo(editedContent);
+        assertThat(edited.getFileUrl()).isEqualTo("https://example.invalid/original.png");
+        assertThat(edited.getCreatedAt()).isEqualTo(originalCreatedAt);
+        assertThat(validator.validate(new UpdatePostRequest("a".repeat(3001), null, false))).isNotEmpty();
+        assertThat(validator.validate(new UpdatePostRequest("  ", null, false))).isNotEmpty();
+
+        updatePost.execute(newer.getId(), author.getId(), new UpdatePostRequest(editedContent, null, true));
+        entityManager.flush();
+        entityManager.clear();
+        assertThat(posts.findById(newer.getId()).orElseThrow().getFileUrl()).isNull();
+        assertThat(findProfilePosts.execute(author.getId(), 0, 10).items().get(0).content()).isEqualTo(editedContent);
+
+        var totalBefore = findFeed.execute(author.getId(), 0, 1).total();
+        deletePost.execute(newer.getId(), author.getId());
+        entityManager.flush();
+        entityManager.clear();
+        assertThat(posts.findById(newer.getId()).orElseThrow().getDeletedAt()).isNotNull();
+        assertThat(posts.findByIdAndDeletedAtIsNull(newer.getId())).isEmpty();
+        assertThat(findProfilePosts.execute(author.getId(), 0, 10).items())
+                .extracting(FeedResponse::id).containsExactly(older.getId());
+        assertThat(findFeed.execute(author.getId(), 0, 1).total()).isEqualTo(totalBefore - 1);
+        assertThatThrownBy(() -> findComments.execute(newer.getId(), 0))
+                .isInstanceOfSatisfying(ResponseStatusException.class, error -> assertThat(error.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND));
+        assertThatThrownBy(() -> setLike.execute(newer.getId(), author.getId(), new SetPostLikeRequest(true)))
+                .isInstanceOfSatisfying(ResponseStatusException.class, error -> assertThat(error.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND));
     }
 
     private UserEntity user(String name) {
