@@ -38,7 +38,7 @@ public class CandidateHomeSeed implements ApplicationRunner {
         var role = roleRepository.findByCodeAndDeletedAtIsNull(RoleCodeUtils.CANDIDATE).orElseThrow();
         var menus = List.of(
                 new MenuPreset("Início", "Home", "/home"),
-                new MenuPreset("Explorar vagas", "BriefcaseBusiness", "/home#vagas"),
+                new MenuPreset("Explorar vagas", "BriefcaseBusiness", "/vagas"),
                 new MenuPreset("Meu perfil", "UserRound", "/perfil"),
                 new MenuPreset("Comunidade", "UsersRound", "/home#feed")
         );
@@ -53,7 +53,10 @@ public class CandidateHomeSeed implements ApplicationRunner {
     }
 
     private void seedMenu(RoleEntity role, MenuPreset preset) {
-        var menu = menuItemRepository.findByPath(preset.path()).orElseGet(MenuItemEntity::new);
+        var menu = menuItemRepository.findByPath(preset.path()).orElseGet(() ->
+                preset.path().equals("/vagas")
+                        ? menuItemRepository.findByPath("/home#vagas").orElseGet(MenuItemEntity::new)
+                        : new MenuItemEntity());
         menu.setTitle(preset.title());
         menu.setIconName(preset.iconName());
         menu.setPath(preset.path());

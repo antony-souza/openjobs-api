@@ -63,6 +63,18 @@ class CreateJobUseCaseTest {
     }
 
     @Test
+    void trimsFieldsBeforeDuplicateCheckAndPersistence() {
+        var userId = UUID.randomUUID();
+        var user = new UserEntity();
+        when(userRepository.getReferenceById(userId)).thenReturn(user);
+        createJobUseCase.execute(new CreateJobRequest("  Desenvolvedor Java  ", "  Descrição da vaga\n "), userId);
+        verify(jobRepository).existsByTitleAndPublishedBy_IdAndDeletedAtIsNull("Desenvolvedor Java", userId);
+        verify(jobRepository).save(jobCaptor.capture());
+        assertThat(jobCaptor.getValue().getTitle()).isEqualTo("Desenvolvedor Java");
+        assertThat(jobCaptor.getValue().getDescription()).isEqualTo("Descrição da vaga");
+    }
+
+    @Test
     void shouldRejectJobWhenTitleAlreadyExists() {
         UUID userId = UUID.randomUUID();
         CreateJobRequest request = new CreateJobRequest(

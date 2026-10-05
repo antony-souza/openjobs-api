@@ -3,6 +3,7 @@ package com.antony.openjobs.modules.jobs.usecase.findopportunities;
 import com.antony.openjobs.common.pagination.IPaginationResponse;
 import com.antony.openjobs.modules.jobs.repository.JobRepository;
 import com.antony.openjobs.modules.users.usecase.UserSummaryResponse;
+import com.antony.openjobs.utils.DateTimeUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -25,7 +26,7 @@ public class FindOpportunitiesUseCase {
                 search.trim(), pageable
         );
         var response = jobs.map(job -> new FindOpportunitiesResponse(
-                job.getId(), job.getTitle(), job.getDescription(), job.getCreatedAt(),
+                job.getId(), job.getTitle(), job.getDescription(), DateTimeUtils.withServerOffset(job.getCreatedAt()),
                 UserSummaryResponse.from(job.getPublishedBy())
         ));
 

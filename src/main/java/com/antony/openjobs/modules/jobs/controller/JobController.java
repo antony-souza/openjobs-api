@@ -5,6 +5,8 @@ import com.antony.openjobs.common.pagination.IPaginationResponse;
 import com.antony.openjobs.config.security.AuthenticatedUser;
 import com.antony.openjobs.config.security.RequiresPermission;
 import com.antony.openjobs.modules.jobs.repository.JobRepository;
+import com.antony.openjobs.modules.jobs.usecase.capabilities.FindJobCapabilitiesResponse;
+import com.antony.openjobs.modules.jobs.usecase.capabilities.FindJobCapabilitiesUseCase;
 import com.antony.openjobs.modules.jobs.usecase.create.CreateJobRequest;
 import com.antony.openjobs.modules.jobs.usecase.create.CreateJobResponse;
 import com.antony.openjobs.modules.jobs.usecase.create.CreateJobUseCase;
@@ -35,6 +37,13 @@ public class JobController {
         private final DeleteJobUseCase deleteJobUseCase;
         private final JobRepository jobRepository;
         private final PaginationService paginationService;
+        private final FindJobCapabilitiesUseCase findJobCapabilitiesUseCase;
+
+        @GetMapping("/capabilities")
+        public ResponseEntity<ApiResponse<FindJobCapabilitiesResponse>> capabilities(
+                        @AuthenticationPrincipal AuthenticatedUser loggedUser) {
+                return ResponseEntity.ok(ApiResponse.success(findJobCapabilitiesUseCase.execute(loggedUser.roleId())));
+        }
 
         @RequiresPermission(Permission.JOB_READ)
         @GetMapping()

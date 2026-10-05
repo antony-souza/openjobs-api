@@ -19,6 +19,9 @@ Atualmente, a API possui fundamentos para:
 
 ## Tecnologias
 
+Para subir a API atrás do Traefik central via Docker Compose, consulte
+[OpenJobs com Traefik](docs/traefik.md).
+
 - Java 17 e Spring Boot 4
 - Spring Web MVC, Spring Data JPA e Hibernate
 - Spring Security e JSON Web Token (JWT)
@@ -235,9 +238,8 @@ http://localhost:8080/swagger-ui/index.html
 
 ## Testes e build
 
-Para publicar a API mantendo a instância anterior ativa até a nova estabilizar,
-use `bash deploy.sh`. A primeira instalação do proxy usa `bash deploy.sh --bootstrap`.
-Veja [o procedimento de deploy](docs/deploy.md) para portas, recuperação e migrations.
+Para atualizar a API, execute `docker compose up -d --build`.
+Veja [a configuração do Traefik](docs/traefik.md) para configurar o proxy.
 
 Execute toda a suíte de testes:
 

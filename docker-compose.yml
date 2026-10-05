@@ -11,15 +11,36 @@ services:
       rabbitmq:
         condition: service_started
 
-    network_mode: host
+    networks:
+      - openjobs
+      - proxy
+
+    labels:
+      traefik.enable: "true"
+      traefik.docker.network: traefik-proxy
+      traefik.http.routers.openjobs-api.rule: "Host(`${API_HOST:-api.openjobs.shop}`)"
+      traefik.http.routers.openjobs-api.entrypoints: web
+      traefik.http.routers.openjobs-api.service: openjobs-api
+      traefik.http.services.openjobs-api.loadbalancer.server.port: "${SERVER_PORT:-8082}"
+
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - wget -qO- "http://127.0.0.1:$${SERVER_PORT}/api/actuator/health/readiness" | grep -Eq '"status"[[:space:]]*:[[:space:]]*"UP"'
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 60s
+    stop_grace_period: 50s
 
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://${POSTGRES_HOST:?Configure POSTGRES_HOST no .env}:${POSTGRES_PORT:-5432}/${POSTGRES_DB:-postgres}?sslmode=${POSTGRES_SSLMODE:-require}
       SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-postgres}
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:?Configure POSTGRES_PASSWORD no .env}
-      SPRING_RABBITMQ_HOST: 127.0.0.1
-      SPRING_RABBITMQ_PORT: ${RABBITMQ_PORT:-5672}
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
       SERVER_PORT: ${SERVER_PORT:-8082}
+      SERVER_ADDRESS: 0.0.0.0
       SPRING_RABBITMQ_USERNAME: ${RABBITMQ_USER:-openjobs}
       SPRING_RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD:-openjobs_dev_password}
       MAIL_HOST: ${MAIL_HOST:-smtp.gmail.com}
@@ -78,3 +99,6 @@ volumes:
 networks:
   openjobs:
     driver: bridge
+  proxy:
+    external: true
+    name: traefik-proxy
