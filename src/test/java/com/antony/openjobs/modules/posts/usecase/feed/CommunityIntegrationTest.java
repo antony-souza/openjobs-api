@@ -223,7 +223,7 @@ class CommunityIntegrationTest {
         assertThat(edited.getContent()).isEqualTo("Resposta editada");
         assertThat(edited.getUser().getId()).isEqualTo(replier.getId());
         assertThat(edited.getParentComment().getId()).isEqualTo(root.id());
-        assertThat(edited.getCreatedAt()).isEqualTo(replies.get(0).createdAt());
+        assertThat(edited.getCreatedAt()).isEqualTo(replies.get(0).createdAt().toLocalDateTime());
         assertThat(validator.validate(new UpdateCommentRequest("a".repeat(1001)))).isNotEmpty();
         assertThat(validator.validate(new CreateCommentRequest("  ", root.id()))).isNotEmpty();
 

@@ -7,6 +7,7 @@ import com.antony.openjobs.modules.posts.model.PostEntity;
 import com.antony.openjobs.modules.posts.repository.projection.PostCount;
 import com.antony.openjobs.modules.posts.usecase.feed.FeedResponse;
 import com.antony.openjobs.modules.users.usecase.UserSummaryResponse;
+import com.antony.openjobs.utils.DateTimeUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -39,7 +40,7 @@ public class PostFeedMappingService {
                 post.getId(),
                 post.getContent(),
                 post.getFileUrl(),
-                post.getCreatedAt(),
+                DateTimeUtils.withServerOffset(post.getCreatedAt()),
                 UserSummaryResponse.from(post.getUser()),
                 likes.getOrDefault(post.getId(), 0L),
                 comments.getOrDefault(post.getId(), 0L),
