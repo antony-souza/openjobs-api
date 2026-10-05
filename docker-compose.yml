@@ -22,6 +22,11 @@ services:
       traefik.http.routers.openjobs-api.entrypoints: web
       traefik.http.routers.openjobs-api.service: openjobs-api
       traefik.http.services.openjobs-api.loadbalancer.server.port: "${SERVER_PORT:-8082}"
+      traefik.http.routers.openjobs-api.middlewares: openjobs-cors
+      traefik.http.middlewares.openjobs-cors.headers.accesscontrolalloworiginlist: "${FRONTEND_URL:-https://web.openjobs.shop}"
+      traefik.http.middlewares.openjobs-cors.headers.accesscontrolallowmethods: "GET,POST,PUT,PATCH,DELETE,OPTIONS"
+      traefik.http.middlewares.openjobs-cors.headers.accesscontrolallowheaders: "Authorization,Content-Type"
+      traefik.http.middlewares.openjobs-cors.headers.addvaryheader: "true"
 
     healthcheck:
       test:

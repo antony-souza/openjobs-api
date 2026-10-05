@@ -34,7 +34,18 @@ Um 404 na raiz do proxy sem domínio é esperado.
 Para passar a produção por essa rota, o hostname configurado em `API_HOST` no Cloudflare
 Tunnel deve apontar para `http://localhost:8090`, preservando o header Host. Isso
 pressupõe que o Tunnel roda no host. Teste antes a resposta local e depois a URL
-pública. Não é necessário configurar CORS no proxy: a API já trata as origens.
+pública.
+
+## Origem do frontend (CORS)
+
+Configure `FRONTEND_URL` no `.env` com a origem completa do frontend, sem caminho
+ou barra final, por exemplo `https://web.example.com`. As labels associam o
+middleware `openjobs-cors` somente à rota desta API, permitindo os métodos
+`GET, POST, PUT, PATCH, DELETE, OPTIONS` e os headers `Authorization, Content-Type`.
+
+O Spring também valida CORS; ao trocar o domínio, mantenha a origem permitida
+no backend alinhada com `FRONTEND_URL`. CORS controla o acesso pelo navegador;
+a autenticação e as permissões continuam sendo responsabilidade da API.
 
 ## Banco externo
 
