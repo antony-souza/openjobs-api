@@ -99,6 +99,7 @@ volumes:
 networks:
   openjobs:
     driver: bridge
+    enable_ipv6: true
   proxy:
     external: true
     name: traefik-proxy

@@ -37,11 +37,21 @@ pública. Não é necessário configurar CORS no proxy: a API já trata as orige
 
 ## Banco externo
 
-A API passa a usar a rede bridge do Docker. Verifique a conectividade do
-`POSTGRES_HOST` a partir do container, especialmente se o endereço do Supabase
-resolve apenas para IPv6. Caso a rede Docker não alcance esse endereço, configure
-uma conexão de banco compatível com a conectividade do servidor antes de migrar.
-Esta alteração não modifica o `.env`, o banco nem seus dados.
+A rede privada `openjobs` habilita IPv6 para permitir a conexão direta ao Supabase
+quando o endereço do banco resolve apenas para IPv6. O servidor também precisa
+ter conectividade e encaminhamento IPv6 funcionando. A rede do Traefik pode
+continuar em IPv4.
+
+Se a rede `openjobs_openjobs` já foi criada sem IPv6, recrie-a após atualizar
+o Compose:
+
+```bash
+docker compose down
+docker compose up -d --build
+```
+
+Execute `down` sem `-v` para preservar o volume do RabbitMQ. Nas próximas
+atualizações, continue usando apenas `docker compose up -d --build`.
 
 ## Fluxo de deploy
 
