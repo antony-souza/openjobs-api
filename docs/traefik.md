@@ -15,7 +15,7 @@ docker compose up -d --build
 ```
 
 A API participa da rede privada `openjobs` e da rede externa `traefik-proxy`.
-As labels anunciam o domínio `API_HOST` (padrão `api.openjobs.shop`) e a porta
+As labels anunciam o domínio configurado em `API_HOST` no `.env` e a porta
 interna `SERVER_PORT` (padrão `8082`). O Traefik configura a rota automaticamente.
 A API não publica porta no host; o RabbitMQ é acessado como `rabbitmq:5672`.
 Sua porta publicada no host continua disponível para o ambiente local/legado.
@@ -23,14 +23,15 @@ Sua porta publicada no host continua disponível para o ambiente local/legado.
 ## Conferir o encaminhamento
 
 ```bash
-curl -i -H 'Host: api.openjobs.shop' http://127.0.0.1:8090/api/actuator/health/readiness
+curl -i -H 'Host: api.example.com' http://127.0.0.1:8090/api/actuator/health/readiness
 docker compose logs --tail=100 api
 ```
 
-O endpoint deve responder HTTP 200 com `status: UP`. Se `API_HOST` foi alterado,
-use esse mesmo domínio no header. Um 404 na raiz do proxy sem domínio é esperado.
+Substitua `api.example.com` pelo valor de `API_HOST` do seu `.env`.
+O endpoint deve responder HTTP 200 com `status: UP`.
+Um 404 na raiz do proxy sem domínio é esperado.
 
-Para passar a produção por essa rota, o hostname `api.openjobs.shop` no Cloudflare
+Para passar a produção por essa rota, o hostname configurado em `API_HOST` no Cloudflare
 Tunnel deve apontar para `http://localhost:8090`, preservando o header Host. Isso
 pressupõe que o Tunnel roda no host. Teste antes a resposta local e depois a URL
 pública. Não é necessário configurar CORS no proxy: a API já trata as origens.
