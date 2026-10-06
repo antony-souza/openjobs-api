@@ -1,6 +1,7 @@
 package com.antony.openjobs.config.security;
 
 import com.antony.openjobs.modules.permissions.model.Permission;
+import com.antony.openjobs.modules.jobs.controller.JobController;
 import com.antony.openjobs.modules.rolepermissions.repository.IRolePermissionRepository;
 import org.aopalliance.intercept.MethodInvocation;
 import org.junit.jupiter.api.Test;
@@ -16,6 +17,23 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 class RequiresPermissionAuthorizationManagerTest {
+
+    @Test
+    void jobCapabilitiesUseControllerAnnotationsAndDenyMissingGrants() throws Exception {
+        var repository = mock(IRolePermissionRepository.class);
+        var manager = new RequiresPermissionAuthorizationManager(repository);
+        var roleId = UUID.randomUUID();
+        var authentication = authenticationFor(roleId);
+        for (var entry : java.util.Map.of("publishCapability", Permission.JOB_CREATE,
+                "editCapability", Permission.JOB_UPDATE).entrySet()) {
+            var invocation = mock(MethodInvocation.class);
+            when(invocation.getMethod()).thenReturn(JobController.class.getDeclaredMethod(entry.getKey()));
+            assertThat(manager.authorize(() -> authentication, invocation).isGranted()).isFalse();
+            when(repository.existsByRole_IdAndPermission_CodeAndDeletedAtIsNullAndRole_DeletedAtIsNullAndPermission_DeletedAtIsNull(
+                    roleId, entry.getValue().getCode())).thenReturn(true);
+            assertThat(manager.authorize(() -> authentication, invocation).isGranted()).isTrue();
+        }
+    }
 
     @Test
     void authorizesWhenTokenRoleHasTheAnnotatedPermission() throws Exception {
