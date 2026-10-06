@@ -16,8 +16,8 @@ public class JobEntity extends BaseEntity {
     @Column(nullable = false)
     private String title;
 
-    @Size(max = 1000)
-    @Column(nullable = false, length = 1000)
+    @Size(max = 3000)
+    @Column(nullable = false, length = 3000)
     private String description;
 
     @ManyToOne(fetch = FetchType.LAZY)

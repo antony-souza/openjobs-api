@@ -9,7 +9,7 @@ public record CreateJobRequest(
         String title,
 
         @NotBlank(message = "A descrição é obrigatória")
-        @Size(max = 1000, message = "A descrição deve ter no máximo 1000 caracteres")
+        @Size(max = 3000, message = "A descrição deve ter no máximo 3000 caracteres")
         String description
 ) {
 }

@@ -1,0 +1,2 @@
+ALTER TABLE jobs
+    ALTER COLUMN description TYPE VARCHAR(3000);
