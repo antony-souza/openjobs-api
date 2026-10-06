@@ -15,8 +15,14 @@ public class FindJobCapabilitiesUseCase {
 
     @Transactional(readOnly = true)
     public FindJobCapabilitiesResponse execute(UUID roleId) {
-        return new FindJobCapabilitiesResponse(rolePermissionRepository
+        boolean canPublish = hasPermission(roleId, Permission.JOB_CREATE);
+        boolean canEdit = hasPermission(roleId, Permission.JOB_UPDATE);
+        return new FindJobCapabilitiesResponse(canPublish, canPublish || canEdit, canEdit);
+    }
+
+    private boolean hasPermission(UUID roleId, Permission permission) {
+        return rolePermissionRepository
                 .existsByRole_IdAndPermission_CodeAndDeletedAtIsNullAndRole_DeletedAtIsNullAndPermission_DeletedAtIsNull(
-                        roleId, Permission.JOB_CREATE.getCode()));
+                        roleId, permission.getCode());
     }
 }

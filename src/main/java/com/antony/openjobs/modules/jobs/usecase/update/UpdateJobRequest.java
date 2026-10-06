@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Size;
 
 public record UpdateJobRequest(
         @NotBlank(message = "O título é obrigatório")
+        @Size(max = 255, message = "O título deve ter no máximo 255 caracteres")
         String title,
 
         @NotBlank(message = "A descrição é obrigatória")

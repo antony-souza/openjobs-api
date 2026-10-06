@@ -13,6 +13,8 @@ import com.antony.openjobs.modules.jobs.usecase.create.CreateJobUseCase;
 import com.antony.openjobs.modules.jobs.usecase.delete.DeleteJobResponse;
 import com.antony.openjobs.modules.jobs.usecase.delete.DeleteJobUseCase;
 import com.antony.openjobs.modules.jobs.usecase.findall.FindAllJobsProjection;
+import com.antony.openjobs.modules.jobs.usecase.findmine.FindMyJobsResponse;
+import com.antony.openjobs.modules.jobs.usecase.findmine.FindMyJobsUseCase;
 import com.antony.openjobs.modules.jobs.usecase.update.UpdateJobRequest;
 import com.antony.openjobs.modules.jobs.usecase.update.UpdateJobResponse;
 import com.antony.openjobs.modules.jobs.usecase.update.UpdateJobUseCase;
@@ -38,6 +40,15 @@ public class JobController {
         private final JobRepository jobRepository;
         private final PaginationService paginationService;
         private final FindJobCapabilitiesUseCase findJobCapabilitiesUseCase;
+        private final FindMyJobsUseCase findMyJobsUseCase;
+
+        @GetMapping("/mine")
+        public ResponseEntity<ApiResponse<IPaginationResponse<FindMyJobsResponse>>> mine(
+                        @AuthenticationPrincipal AuthenticatedUser loggedUser,
+                        @RequestParam(defaultValue = "0") int page,
+                        @RequestParam(defaultValue = "10") int size) {
+                return ResponseEntity.ok(ApiResponse.success(findMyJobsUseCase.execute(loggedUser.userId(), page, size)));
+        }
 
         @GetMapping("/capabilities")
         public ResponseEntity<ApiResponse<FindJobCapabilitiesResponse>> capabilities(
@@ -70,7 +81,7 @@ public class JobController {
 
         @RequiresPermission(Permission.JOB_UPDATE)
         @PutMapping("/{id}")
-        public ResponseEntity<ApiResponse<UpdateJobResponse>> create(
+        public ResponseEntity<ApiResponse<UpdateJobResponse>> update(
                         @PathVariable("id") UUID jobId,
                         @Valid @RequestBody UpdateJobRequest request,
                         @AuthenticationPrincipal AuthenticatedUser loggedUser) {

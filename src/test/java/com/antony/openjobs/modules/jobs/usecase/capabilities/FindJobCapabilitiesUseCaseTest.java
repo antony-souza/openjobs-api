@@ -20,5 +20,19 @@ class FindJobCapabilitiesUseCaseTest {
         when(repository.existsByRole_IdAndPermission_CodeAndDeletedAtIsNullAndRole_DeletedAtIsNullAndPermission_DeletedAtIsNull(
                 roleId, Permission.JOB_CREATE.getCode())).thenReturn(true);
         assertThat(useCase.execute(roleId).canPublish()).isTrue();
+        assertThat(useCase.execute(roleId).canManage()).isTrue();
+        assertThat(useCase.execute(roleId).canEdit()).isFalse();
+    }
+
+    @Test
+    void allowsManagementForEditorsWithoutGrantingPublishAccess() {
+        var repository = mock(IRolePermissionRepository.class);
+        var roleId = UUID.randomUUID();
+        when(repository.existsByRole_IdAndPermission_CodeAndDeletedAtIsNullAndRole_DeletedAtIsNullAndPermission_DeletedAtIsNull(
+                roleId, Permission.JOB_UPDATE.getCode())).thenReturn(true);
+        var capabilities = new FindJobCapabilitiesUseCase(repository).execute(roleId);
+        assertThat(capabilities.canManage()).isTrue();
+        assertThat(capabilities.canEdit()).isTrue();
+        assertThat(capabilities.canPublish()).isFalse();
     }
 }

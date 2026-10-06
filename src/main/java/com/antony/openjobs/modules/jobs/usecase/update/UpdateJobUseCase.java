@@ -2,11 +2,10 @@ package com.antony.openjobs.modules.jobs.usecase.update;
 
 import com.antony.openjobs.modules.jobs.model.JobEntity;
 import com.antony.openjobs.modules.jobs.repository.JobRepository;
-import com.antony.openjobs.modules.users.model.UserEntity;
-import com.antony.openjobs.modules.users.repository.IUserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.UUID;
@@ -15,23 +14,20 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class UpdateJobUseCase {
     private final JobRepository jobRepository;
-    private final IUserRepository userRepository;
 
+    @Transactional
     public UpdateJobResponse execute(UUID jobId, UpdateJobRequest request, UUID publishedById) {
         JobEntity jobEntity = jobRepository.findByIdAndPublishedBy_IdAndDeletedAtIsNull(jobId, publishedById)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
-                        "Job not found"
+                        "Vaga não encontrada"
                 ));
 
-        UserEntity publishedBy = userRepository.getReferenceById(publishedById);
-
-        jobEntity.setTitle(request.title());
-        jobEntity.setDescription(request.description());
-        jobEntity.setPublishedBy(publishedBy);
+        jobEntity.setTitle(request.title().trim());
+        jobEntity.setDescription(request.description().trim());
 
         jobRepository.save(jobEntity);
 
-        return new UpdateJobResponse("Vaga criada com sucesso!");
+        return new UpdateJobResponse("Vaga atualizada com sucesso!");
     }
 }

@@ -12,6 +12,8 @@ import java.util.UUID;
 
 @Repository
 public interface JobRepository extends IBaseRepository<JobEntity, UUID> {
+    Page<JobEntity> findByPublishedBy_IdAndDeletedAtIsNull(UUID publishedById, Pageable pageable);
+
     @EntityGraph(attributePaths = "publishedBy")
     Page<JobEntity> findByDeletedAtIsNullAndPublishedBy_DeletedAtIsNullAndTitleContainingIgnoreCase(String title, Pageable pageable);
 
