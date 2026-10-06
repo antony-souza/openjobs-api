@@ -7,7 +7,8 @@ cd /caminho/home-lab-docker/traefik
 docker compose up -d --wait
 ```
 
-Ele cria a rede `traefik-proxy`. Na raiz do OpenJobs, com `.env` configurado:
+Ele cria a rede `traefik-proxy`. Configure também o Tunnel conforme a seção
+abaixo. Na raiz do OpenJobs, com `.env` configurado:
 
 ```bash
 docker compose config --quiet
@@ -31,10 +32,38 @@ Substitua `api.example.com` pelo valor de `API_HOST` do seu `.env`.
 O endpoint deve responder HTTP 200 com `status: UP`.
 Um 404 na raiz do proxy sem domínio é esperado.
 
-Para passar a produção por essa rota, o hostname configurado em `API_HOST` no Cloudflare
-Tunnel deve apontar para `http://localhost:8090`, preservando o header Host. Isso
-pressupõe que o Tunnel roda no host. Teste antes a resposta local e depois a URL
-pública.
+## Cloudflare Tunnel no Compose
+
+O serviço `cloudflared` sobe junto com a API e o RabbitMQ. Configure `TUNNEL_TOKEN`
+no `.env` com o token de um Tunnel gerenciado pelo painel da sua conta Cloudflare.
+O token é uma credencial, não o ID do Tunnel, e não deve ser enviado ao Git.
+
+No painel, configure a rota de aplicação publicada para o domínio de `API_HOST`
+com serviço HTTP e destino `server-traefik:80` (`http://server-traefik:80`).
+Preserve o Host original, sem substituí-lo nas opções da origem. Confirme que o
+DNS do domínio aponta para esse Tunnel. As labels não criam o registro DNS.
+
+O conector acessa o Traefik pela rede `traefik-proxy`, sem publicar portas nem
+montar o socket Docker. Dentro do container, `localhost:8090` não aponta para o
+Traefik; use o nome `server-traefik` e a porta interna `80`.
+
+```bash
+docker compose up -d --build
+docker compose logs --tail=50 cloudflared
+curl -i https://api.example.com/api/actuator/health/readiness
+```
+
+Substitua o domínio do exemplo pelo seu `API_HOST`. Verifique as conexões
+registradas nos logs, o estado do Tunnel no painel e o HTTP 200 da API pública.
+
+Se o Tunnel atual é gerenciado localmente por um arquivo YAML e uma credencial
+JSON no host, este serviço com token exige migrar o Tunnel para gerenciamento
+pelo painel ou criar um novo Tunnel nesse formato. Não coloque o conteúdo do
+JSON em `TUNNEL_TOKEN`. Se criar outro Tunnel, atualize o DNS para o ID dele.
+
+Desative o `cloudflared` antigo do host somente depois de confirmar o conector
+novo e o acesso público. Réplicas do mesmo Tunnel devem ter encaminhamentos
+consistentes para que requisições não alternem entre configurações diferentes.
 
 ## Origem do frontend (CORS)
 
